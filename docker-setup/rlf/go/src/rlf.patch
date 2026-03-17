@@ -1,0 +1,475 @@
+diff --git a/execution/backend.go b/execution/backend.go
+index 70258f9..7eff9d2 100644
+--- a/execution/backend.go
++++ b/execution/backend.go
+@@ -280,6 +280,7 @@ type Tx struct {
+ 	Timestamp   *big.Int       `json:"timestamp"`
+ 	Snapshot    bool           `json:"snapshot"`
+ 	Policy      string         `json:"policy"`
++	Number 		*big.Int       `json:"number"`
+ }
+ 
+ func (backend *Backend) CommitTransaction(
+@@ -419,7 +420,7 @@ func (backend *Backend) CommitTx(tx *Tx) *FuzzLogger {
+ 	if tx.Snapshot {
+ 		backend.Snapshots[tx.ID] = backend.StateDB.Copy()
+ 	}
+-
++	tx.Number = header.Number
+ 	fuzzLogger := &FuzzLogger{
+ 		Tx:                   tx,
+ 		Logs:                 structLogger.StructLogs(),
+diff --git a/execution/test.go b/execution/test.go
+index a608269..e69de29 100644
+--- a/execution/test.go
++++ /dev/null
+@@ -1,20 +0,0 @@
+-package main
+-
+-import (
+-	"fmt"
+-	// "math/big"
+-	// "crypto/ecdsa"
+-	// "github.com/ethereum/go-ethereum/crypto"
+-	// "github.com/ethereum/go-ethereum/core/vm"
+-	// "github.com/ethereum/go-ethereum/core/asm"
+-)
+-  
+-func main() {
+-	var aa  = make(map[int]string)
+-	aa[1] = "test"
+-	if a,ok := aa[2]; ok{
+-		fmt.Printf(a,ok)
+-	} else {
+-		fmt.Println(ok)
+-	}
+-}
+diff --git a/rlf/__main__.py b/rlf/__main__.py
+index 96880ec..16d8915 100644
+--- a/rlf/__main__.py
++++ b/rlf/__main__.py
+@@ -104,7 +104,7 @@ def main():
+         policy.load_model()
+         obs = ObsReinforcement(contract_manager, account_manager, args.dataset_dump_path)
+ 
+-    environment = Environment(args.limit, args.seed, args.max_episode, start_time)
++    environment = Environment(args.limit, args.seed, args.max_episode, start_time, output_dir=args.output_path)
+     if args.fuzzer == 'reinforcement':
+         result, count_dict = environment.fuzz_loop_RL(policy, obs, start_time, args)
+     else:
+@@ -123,4 +123,4 @@ def main():
+     print('fuzz_output')
+ 
+ if __name__ == '__main__':
+-    main()
+\ No newline at end of file
++    main()
+diff --git a/rlf/execution/tx.py b/rlf/execution/tx.py
+index cc803d0..7370481 100644
+--- a/rlf/execution/tx.py
++++ b/rlf/execution/tx.py
+@@ -24,7 +24,7 @@ class Tx:
+ 
+     IDGEN = IDGenerator()
+ 
+-    def __init__(self, policy, contract, call_address, method, input_bytes, arguments, amount, sender, timestamp, snapshot, idd=None):
++    def __init__(self, policy, contract, call_address, method, input_bytes, arguments, amount, sender, timestamp, number, snapshot, idd=None):
+         self.idd = Tx.IDGEN.gen(contract) if idd is None else idd
+ 
+         if policy.__class__ == str:
+@@ -40,7 +40,7 @@ class Tx:
+         self.amount = amount
+         self.sender = sender
+         self.timestamp = timestamp
+-
++        self.number = number
+         self.snapshot = snapshot
+ 
+ 
+@@ -72,6 +72,17 @@ class Tx:
+     def to_execution_str(self):
+         return json.dumps(self.to_execution_dict()) # dict to json
+ 
++    def dump(self):
++        j = OrderedDict()
++        j['contract'] = self.contract
++        j['call_address'] = self.call_address
++        j['method'] = self.method
++        j['arguments'] = self.arguments
++        j['amount'] = self.amount
++        j['sender'] = self.sender
++        j['timestamp'] = self.timestamp
++        j['number'] = 1 if self.number is None else self.number
++        return j
+ 
+     def to_json(self):
+         j = OrderedDict()
+@@ -85,4 +96,4 @@ class Tx:
+         j['timestamp'] = self.timestamp
+         j['snapshot'] = self.snapshot
+         j['policy'] = self.policy,
+-        return j
+\ No newline at end of file
++        return j
+diff --git a/rlf/fuzzers/F_random/policy_Frandom.py b/rlf/fuzzers/F_random/policy_Frandom.py
+index 38fa3e2..2d5c21e 100644
+--- a/rlf/fuzzers/F_random/policy_Frandom.py
++++ b/rlf/fuzzers/F_random/policy_Frandom.py
+@@ -32,7 +32,7 @@ class PolicyFRandom(PolicyBase):
+         amount = self._select_amount(contract, method, sender, obs)
+         timestamp = self._select_timestamp(obs)
+ 
+-        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, True)
++        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, None, True)
+         return tx
+ 
+     def select_tx(self, obs):
+@@ -49,7 +49,7 @@ class PolicyFRandom(PolicyBase):
+         amount = self._select_amount(contract, method, sender, obs)
+         timestamp = self._select_timestamp(obs)
+ 
+-        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, True)
++        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, None, True)
+         return tx
+ 
+ 
+diff --git a/rlf/fuzzers/checkers/checker.py b/rlf/fuzzers/checkers/checker.py
+index 69f0969..e0084eb 100644
+--- a/rlf/fuzzers/checkers/checker.py
++++ b/rlf/fuzzers/checkers/checker.py
+@@ -9,4 +9,17 @@ class Checker:
+ 
+     @abc.abstractmethod
+     def check(self, logger):
+-        raise NotImplementedError
+\ No newline at end of file
++        raise NotImplementedError
++    
++    def dump_bug(self, elapsed, sig, pc, method):
++        s = int(elapsed)
++        d = s // 86400
++        s = s - (d * 86400)
++        h = s // 3600
++        s = s - (h * 3600)
++        m = s // 60
++        s = s - (m * 60)
++        time_str = '%02d:%02d:%02d:%02d' % (d, h, m, s)
++        msg = '[%s] Found %s at %s\n'
++        with open('/home/test/rlf-workspace/output/log.txt', 'a+') as f:
++            f.write(msg % (time_str, sig, method))
+\ No newline at end of file
+diff --git a/rlf/fuzzers/checkers/leaking.py b/rlf/fuzzers/checkers/leaking.py
+index 4c9b930..5112a7a 100644
+--- a/rlf/fuzzers/checkers/leaking.py
++++ b/rlf/fuzzers/checkers/leaking.py
+@@ -1,10 +1,19 @@
+ from .checker import Checker
+-
++import time
+ 
+ class Leaking(Checker):
+ 
+-    def __init__(self):
++    def __init__(self, start_time):
+         super().__init__()
++        self.start_time = start_time
++        self.lks = set()
+ 
+     def check(self, logger):
+-        return 'leaking' in logger.bug_res
+\ No newline at end of file
++        if 'leaking' in logger.bug_res:
++            if logger.tx.method not in self.lks:
++                elapsed = time.time() - self.start_time
++                self.dump_bug(elapsed, 'EtherLeak', 0, logger.tx.method)
++                self.lks.add(logger.tx.method)
++            return True
++        else:
++            return False
+\ No newline at end of file
+diff --git a/rlf/fuzzers/checkers/suicidal.py b/rlf/fuzzers/checkers/suicidal.py
+index 837ed22..e856304 100644
+--- a/rlf/fuzzers/checkers/suicidal.py
++++ b/rlf/fuzzers/checkers/suicidal.py
+@@ -1,11 +1,13 @@
+ from .checker import Checker
+ from ...ethereum import SELFDESTRUCT
+-
++import time
+ 
+ class Suicidal(Checker):
+ 
+-    def __init__(self, contract_manager, account_manager):
++    def __init__(self, contract_manager, account_manager, start_time):
+         super().__init__()
++        self.start_time = start_time
++        self.scs = set()
+         self.contract_manager = contract_manager
+         self.account_manager = account_manager
+ 
+@@ -14,8 +16,14 @@ class Suicidal(Checker):
+             self.attacker_addresses.add(int(account.address, 16))
+ 
+     def check(self, logger):
++        except_pc = None
+         for log in logger.logs:
+             if log.op == SELFDESTRUCT and int(log.stack[-1], 16) in self.attacker_addresses:
++                if log.pc not in self.scs:
++                    except_pc = log.pc
++                    elapsed = time.time() - self.start_time
++                    self.dump_bug(elapsed, 'SuicidalContract', except_pc, logger.tx.method)
++                    self.scs.add(except_pc)
+                 return True
+ 
+         return False
+\ No newline at end of file
+diff --git a/rlf/fuzzers/environment.py b/rlf/fuzzers/environment.py
+index 28a9d34..4c16fd9 100644
+--- a/rlf/fuzzers/environment.py
++++ b/rlf/fuzzers/environment.py
+@@ -5,6 +5,7 @@ import torch
+ import logging
+ import json
+ import time
++import os
+ 
+ from ..execution import Execution, Tx
+ from ..ethereum import Method
+@@ -17,12 +18,51 @@ LOG = logging.getLogger(__name__)
+ 
+ class Environment:
+ 
+-    def __init__(self, limit, seed, max_episode, start_time):
++    def __init__(self, limit, seed, max_episode, start_time, output_dir=None):
+         self.limit = limit
+         self.seed = seed
+         self.max_episode = max_episode
+         self.start_train = 5 * max_episode
+         self.start_time = start_time
++        self.output_dir = output_dir if output_dir is not None else '/home/test/rlf-workspace/output'
++        self.txs = []
++        self.cov_increased = False
++        self.bug_increased = False
++        self.seen_bug_types = set()
++        self.new_bug_types_in_seq = set()
++
++    def dump_txs(self, prefix):
++        now = time.time()
++        try:
++            os.makedirs(self.output_dir, exist_ok=True)
++            path = os.path.join(self.output_dir, '%s_%0.5f' % (prefix, now - self.start_time))
++            with open(path, 'w') as f:
++                for tx in self.txs:
++                    f.write(json.dumps(tx.dump()) + '\n')
++        except OSError as err:
++            LOG.warning('failed to dump testcase to %s: %s', self.output_dir, err)
++
++    def _update_bug_flag(self, obs):
++        current_bug_types = set(obs.stat.update_bug.keys())
++        new_bug_types = current_bug_types - self.seen_bug_types
++        if len(new_bug_types) > 0:
++            self.bug_increased = True
++            self.new_bug_types_in_seq.update(new_bug_types)
++            self.seen_bug_types.update(new_bug_types)
++
++    def reset_txs(self):
++        if len(self.txs) > 0:
++            if self.cov_increased:
++                self.dump_txs('tc')
++            if self.bug_increased:
++                for bug_type in sorted(self.new_bug_types_in_seq):
++                    # Keep filenames stable and shell-safe.
++                    safe_bug_type = re.sub(r'[^A-Za-z0-9_.-]', '_', bug_type)
++                    self.dump_txs('bug_%s' % safe_bug_type)
++        self.txs = []
++        self.cov_increased = False
++        self.bug_increased = False
++        self.new_bug_types_in_seq = set()
+ 
+     def fuzz_loop_RL(self, policy, obs, start_time, args):
+         if len(policy.contract_manager.fuzz_contract_names) != 1:
+@@ -63,7 +103,9 @@ class Environment:
+         else:
+             episole = init_episole
+ 
+-        for i in range(1+init_limit, self.limit+1):
++        i = 0
++        while True:
++            i += 1
+             if i % 1000 == 0:
+                 for contract_name in policy.contract_manager.fuzz_contract_names:
+                     contract = policy.contract_manager[contract_name]
+@@ -73,11 +115,14 @@ class Environment:
+                 tx, action, hidden = policy.select_tx(state, x_method, contract, obs, hidden=hidden, frandom=False, episole=1)
+             else:
+                 tx, action, hidden = policy.select_tx(state, x_method, contract, obs, hidden=hidden, frandom=False, episole=episole)
+-            
+ 
+             if tx is None:
+                 break
+-            next_state, reward, done, x_method, contract = policy.step(tx, obs)
++            self.txs.append(tx)
++            next_state, step_reward, done, x_method, contract = policy.step(tx, obs)
++            if step_reward > 0:
++                self.cov_increased = True
++            self._update_bug_flag(obs)
+ 
+             reward = 0
+             if i % self.max_episode == 0:
+@@ -92,7 +137,6 @@ class Environment:
+                         action_cov[j] = 1
+ 
+                 action_cov = action_cov.mean()
+-                new_insn_coverage, new_block_coverage = obs.stat.get_coverage(tx.contract)
+                 reward_of_bug = 0
+                 for bug in obs.stat.update_bug:
+                     if bug in ['Suicidal', 'Leaking']:
+@@ -116,8 +160,9 @@ class Environment:
+             if i % self.max_episode == 0 and i <= 2000:
+                 result['txs_loop'].append((time.time(),obs.stat.to_json()))
+ 
+-            if i % self.max_episode == 0 and i < self.limit:
++            if i % self.max_episode == 0:
+                 policy.reset()
++                self.reset_txs()
+                 policy.reset_dqn_state()
+                 episode_reward = 0
+                 hidden = None
+@@ -129,10 +174,14 @@ class Environment:
+                     if args.mode == 'train':
+                         policy.agent.learn()
+                         episole = init_episole - 0.6 * (i - self.start_train)/(self.limit - self.start_train)
+-
++            if i % 2000 == 0:
++                self.reset_txs()
++            
+             if time.time() - start_time >= args.limit_time:
+                 break
+ 
++        self.reset_txs()
++
+         if args.mode == 'train':
+             policy.agent.save(args.rl_model)
+ 
+@@ -163,7 +212,7 @@ class Environment:
+         for name in policy.contract_manager.fuzz_contract_names:
+             contract = policy.contract_manager[name]
+             if Method.FALLBACK not in contract.abi.methods_by_name:
+-                tx = Tx(policy_random, contract.name, contract.addresses[0], Method.FALLBACK, bytes(), [], 0, 0, 0, True)
++                tx = Tx(policy_random, contract.name, contract.addresses[0], Method.FALLBACK, bytes(), [], 0, 0, 0, None, True)
+                 logger = policy_random.execution.commit_tx(tx)
+                 obs.update(logger, True)
+                 # LOG.info(obs.stat)
+@@ -206,11 +255,15 @@ class Environment:
+             tx = policy.select_tx(obs)
+             if tx is None:
+                 break
++            self.txs.append(tx)
+ 
+             logger = policy.execution.commit_tx(tx)
+             old_insn_coverage = obs.stat.get_insn_coverage(tx.contract)
+             obs.update(logger, False)
+             new_insn_coverage = obs.stat.get_insn_coverage(tx.contract)
++            if new_insn_coverage - old_insn_coverage > 0:
++                self.cov_increased = True
++            self._update_bug_flag(obs)
+ 
+             if i % self.max_episode == 0:
+                 result['txs_loop'].append(obs.stat.to_json())
+@@ -219,6 +272,9 @@ class Environment:
+             if i % self.max_episode == 0:
+                 # reset the state
+                 policy.reset()
++                self.reset_txs()
++
++        self.reset_txs()
+         
+         LOG.info(obs.stat)
+-        return result
+\ No newline at end of file
++        return result
+diff --git a/rlf/fuzzers/random/policy_random.py b/rlf/fuzzers/random/policy_random.py
+index 955db27..2d71369 100644
+--- a/rlf/fuzzers/random/policy_random.py
++++ b/rlf/fuzzers/random/policy_random.py
+@@ -19,7 +19,7 @@ class PolicyRandom(PolicyBase):
+         amount = self._select_amount(contract, method, sender, obs)
+         timestamp = self._select_timestamp(obs)
+ 
+-        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, True)
++        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, None, True)
+         return tx
+ 
+     def select_tx_with_method(self, contract, method, obs):
+@@ -38,7 +38,7 @@ class PolicyRandom(PolicyBase):
+         amount = self._select_amount(contract, method, sender, obs)
+         timestamp = self._select_timestamp(obs)
+ 
+-        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, True)
++        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, None, True)
+         return tx
+ 
+ 
+diff --git a/rlf/fuzzers/reinforcement/policy_reinforcement.py b/rlf/fuzzers/reinforcement/policy_reinforcement.py
+index 0e8620b..9317ff2 100644
+--- a/rlf/fuzzers/reinforcement/policy_reinforcement.py
++++ b/rlf/fuzzers/reinforcement/policy_reinforcement.py
+@@ -183,7 +183,7 @@ class PolicyReinforcement(PolicyBase):
+         reward = ((new_insn_coverage - old_insn_coverage) + (new_block_coverage - old_block_coverage))
+         x_state, x_method, contract = self.compute_state(obs)
+ 
+-        return x_state, reward, np.float(destruct), x_method, contract
++        return x_state, reward, np.float64(destruct), x_method, contract
+ 
+     def select_tx(self, x_state, x_method, contract, obs, hidden=None, frandom=False, episole=0.3):
+ 
+@@ -219,7 +219,7 @@ class PolicyReinforcement(PolicyBase):
+ 
+         self.last_method[contract.name] = pred_f
+ 
+-        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, True)
++        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, None, True)
+         # print(method.name,arguments,amount,sender)
+         return tx, action, new_hidden
+ 
+diff --git a/rlf/fuzzers/stat.py b/rlf/fuzzers/stat.py
+index 19f72b5..1fa92a0 100644
+--- a/rlf/fuzzers/stat.py
++++ b/rlf/fuzzers/stat.py
+@@ -1,4 +1,5 @@
+ import json
++import time
+ 
+ from collections import OrderedDict
+ from .checkers import *
+@@ -42,13 +43,15 @@ class Stat:
+         for name in contract_manager.contract_dict:
+             self.bug_res[name] = dict()
+ 
++        start_time = time.time()
++
+         self.update_bug = dict()
+         self.checkers = [
+             BlockStateDep(),
+             DangerousDelegatecall(contract_manager, account_manager),
+-            Leaking(),
++            Leaking(start_time),
+             Locking(contract_manager, account_manager),
+-            Suicidal(contract_manager, account_manager),
++            Suicidal(contract_manager, account_manager, start_time),
+             UnhandledException(),
+             Reentrancy(contract_manager, account_manager)
+         ]
+diff --git a/script/extract.py b/script/extract.py
+index 1b30da7..2e1a891 100644
+--- a/script/extract.py
++++ b/script/extract.py
+@@ -93,7 +93,7 @@ def extract_transactions():
+         generate_the_migrations(fuzz_contract=args.fuzz_contract)
+ 
+     subprocess.call('truffle deploy', shell=True)
+-    extract_js_path = os.path.join(os.environ['GOPATH'], 'src', 'ilf', 'script', 'extract.js')
++    extract_js_path = os.path.join(os.environ['GOPATH'], 'src', 'rlf', 'script', 'extract.js')
+     subprocess.call('truffle exec {}'.format(extract_js_path), shell=True)
+ 
+ def generate_the_migrations(fuzz_contract):

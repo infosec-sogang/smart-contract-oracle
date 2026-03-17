@@ -1,0 +1,441 @@
+diff --git a/execution/backend.go b/execution/backend.go
+index 70258f9..988d834 100644
+--- a/execution/backend.go
++++ b/execution/backend.go
+@@ -280,6 +280,7 @@ type Tx struct {
+ 	Timestamp   *big.Int       `json:"timestamp"`
+ 	Snapshot    bool           `json:"snapshot"`
+ 	Policy      string         `json:"policy"`
++	Number 		*big.Int       `json:"number"`
+ }
+ 
+ func (backend *Backend) CommitTransaction(
+@@ -389,26 +390,17 @@ func (backend *Backend) CommitTx(tx *Tx) *FuzzLogger {
+ 	header.Time = tx.Timestamp
+ 
+ 	contractOldBalance := backend.StateDB.GetBalance(tx.CallAddress)
+-	accountsOldBalances := make([]*big.Int, len(backend.Accounts.Accounts))
+-	for i, account := range backend.Accounts.Accounts {
+-		accountsOldBalances[i] = backend.StateDB.GetBalance(account.Address)
+-	}
+ 
+ 	structLogger := backend.CommitTransaction(signedTransaction, header, &ProcessOptions{})
+ 
+ 	contractNewBalance := backend.StateDB.GetBalance(tx.CallAddress)
+ 	contractReceiveEther := contractNewBalance.Cmp(contractOldBalance) == 1
+ 
+-	attackerReceiveEther := false
+-	for i, account := range backend.Accounts.Accounts {
+-		newBalance := backend.StateDB.GetBalance(account.Address)
+-		if newBalance.Cmp(accountsOldBalances[i]) == 1 && account.IsAttacker {
+-			attackerReceiveEther = true
+-		}
+-	}
++	senderBalance := backend.StateDB.GetBalance(sender.Address)
++	senderBalanceAboveInitial := senderBalance.Cmp(sender.Amount) == 1
+ 
+ 	bugRes := make(map[string]bool)
+-	if attackerReceiveEther {
++	if senderBalanceAboveInitial {
+ 		bugRes["leaking"] = true
+ 	}
+ 
+@@ -419,7 +411,7 @@ func (backend *Backend) CommitTx(tx *Tx) *FuzzLogger {
+ 	if tx.Snapshot {
+ 		backend.Snapshots[tx.ID] = backend.StateDB.Copy()
+ 	}
+-
++	tx.Number = header.Number
+ 	fuzzLogger := &FuzzLogger{
+ 		Tx:                   tx,
+ 		Logs:                 structLogger.StructLogs(),
+diff --git a/execution/test.go b/execution/test.go
+index a608269..e69de29 100644
+--- a/execution/test.go
++++ /dev/null
+@@ -1,20 +0,0 @@
+-package main
+-
+-import (
+-	"fmt"
+-	// "math/big"
+-	// "crypto/ecdsa"
+-	// "github.com/ethereum/go-ethereum/crypto"
+-	// "github.com/ethereum/go-ethereum/core/vm"
+-	// "github.com/ethereum/go-ethereum/core/asm"
+-)
+-  
+-func main() {
+-	var aa  = make(map[int]string)
+-	aa[1] = "test"
+-	if a,ok := aa[2]; ok{
+-		fmt.Printf(a,ok)
+-	} else {
+-		fmt.Println(ok)
+-	}
+-}
+diff --git a/rlf/execution/tx.py b/rlf/execution/tx.py
+index cc803d0..5b00ec4 100644
+--- a/rlf/execution/tx.py
++++ b/rlf/execution/tx.py
+@@ -24,7 +24,7 @@ class Tx:
+ 
+     IDGEN = IDGenerator()
+ 
+-    def __init__(self, policy, contract, call_address, method, input_bytes, arguments, amount, sender, timestamp, snapshot, idd=None):
++    def __init__(self, policy, contract, call_address, method, input_bytes, arguments, amount, sender, timestamp, number, snapshot, idd=None):
+         self.idd = Tx.IDGEN.gen(contract) if idd is None else idd
+ 
+         if policy.__class__ == str:
+@@ -40,7 +40,7 @@ class Tx:
+         self.amount = amount
+         self.sender = sender
+         self.timestamp = timestamp
+-
++        self.number = number
+         self.snapshot = snapshot
+ 
+ 
+@@ -72,7 +72,6 @@ class Tx:
+     def to_execution_str(self):
+         return json.dumps(self.to_execution_dict()) # dict to json
+ 
+-
+     def to_json(self):
+         j = OrderedDict()
+         j['idd'] = self.idd
+diff --git a/rlf/fuzzers/F_random/policy_Frandom.py b/rlf/fuzzers/F_random/policy_Frandom.py
+index 38fa3e2..2d5c21e 100644
+--- a/rlf/fuzzers/F_random/policy_Frandom.py
++++ b/rlf/fuzzers/F_random/policy_Frandom.py
+@@ -32,7 +32,7 @@ class PolicyFRandom(PolicyBase):
+         amount = self._select_amount(contract, method, sender, obs)
+         timestamp = self._select_timestamp(obs)
+ 
+-        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, True)
++        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, None, True)
+         return tx
+ 
+     def select_tx(self, obs):
+@@ -49,7 +49,7 @@ class PolicyFRandom(PolicyBase):
+         amount = self._select_amount(contract, method, sender, obs)
+         timestamp = self._select_timestamp(obs)
+ 
+-        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, True)
++        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, None, True)
+         return tx
+ 
+ 
+diff --git a/rlf/fuzzers/checkers/checker.py b/rlf/fuzzers/checkers/checker.py
+index 69f0969..e0084eb 100644
+--- a/rlf/fuzzers/checkers/checker.py
++++ b/rlf/fuzzers/checkers/checker.py
+@@ -9,4 +9,17 @@ class Checker:
+ 
+     @abc.abstractmethod
+     def check(self, logger):
+-        raise NotImplementedError
+\ No newline at end of file
++        raise NotImplementedError
++    
++    def dump_bug(self, elapsed, sig, pc, method):
++        s = int(elapsed)
++        d = s // 86400
++        s = s - (d * 86400)
++        h = s // 3600
++        s = s - (h * 3600)
++        m = s // 60
++        s = s - (m * 60)
++        time_str = '%02d:%02d:%02d:%02d' % (d, h, m, s)
++        msg = '[%s] Found %s at %s\n'
++        with open('/home/test/rlf-workspace/output/log.txt', 'a+') as f:
++            f.write(msg % (time_str, sig, method))
+\ No newline at end of file
+diff --git a/rlf/fuzzers/checkers/suicidal.py b/rlf/fuzzers/checkers/suicidal.py
+index 837ed22..b9e8038 100644
+--- a/rlf/fuzzers/checkers/suicidal.py
++++ b/rlf/fuzzers/checkers/suicidal.py
+@@ -6,16 +6,13 @@ class Suicidal(Checker):
+ 
+     def __init__(self, contract_manager, account_manager):
+         super().__init__()
+-        self.contract_manager = contract_manager
+-        self.account_manager = account_manager
+-
+-        self.attacker_addresses = set()
+-        for account in self.account_manager:
+-            self.attacker_addresses.add(int(account.address, 16))
++        self.last_pc = None
++        self.last_inheritor = None
+ 
+     def check(self, logger):
+         for log in logger.logs:
+-            if log.op == SELFDESTRUCT and int(log.stack[-1], 16) in self.attacker_addresses:
++            if log.op == SELFDESTRUCT:
++                self.last_pc = log.pc
++                self.last_inheritor = int(log.stack[-1], 16)
+                 return True
+-
+-        return False
+\ No newline at end of file
++        return False
+diff --git a/rlf/fuzzers/environment.py b/rlf/fuzzers/environment.py
+index 28a9d34..0c61b4a 100644
+--- a/rlf/fuzzers/environment.py
++++ b/rlf/fuzzers/environment.py
+@@ -22,7 +22,11 @@ class Environment:
+         self.seed = seed
+         self.max_episode = max_episode
+         self.start_train = 5 * max_episode
+-        self.start_time = start_time
++        self.start_time = time.time()
++        self.txs = []
++
++    def reset_txs(self):
++        self.txs = []
+ 
+     def fuzz_loop_RL(self, policy, obs, start_time, args):
+         if len(policy.contract_manager.fuzz_contract_names) != 1:
+@@ -63,7 +67,9 @@ class Environment:
+         else:
+             episole = init_episole
+ 
+-        for i in range(1+init_limit, self.limit+1):
++        i = 0
++        while True:
++            i += 1
+             if i % 1000 == 0:
+                 for contract_name in policy.contract_manager.fuzz_contract_names:
+                     contract = policy.contract_manager[contract_name]
+@@ -73,7 +79,7 @@ class Environment:
+                 tx, action, hidden = policy.select_tx(state, x_method, contract, obs, hidden=hidden, frandom=False, episole=1)
+             else:
+                 tx, action, hidden = policy.select_tx(state, x_method, contract, obs, hidden=hidden, frandom=False, episole=episole)
+-            
++            self.txs.append(tx)
+ 
+             if tx is None:
+                 break
+@@ -92,7 +98,6 @@ class Environment:
+                         action_cov[j] = 1
+ 
+                 action_cov = action_cov.mean()
+-                new_insn_coverage, new_block_coverage = obs.stat.get_coverage(tx.contract)
+                 reward_of_bug = 0
+                 for bug in obs.stat.update_bug:
+                     if bug in ['Suicidal', 'Leaking']:
+@@ -116,8 +121,9 @@ class Environment:
+             if i % self.max_episode == 0 and i <= 2000:
+                 result['txs_loop'].append((time.time(),obs.stat.to_json()))
+ 
+-            if i % self.max_episode == 0 and i < self.limit:
++            if i % self.max_episode == 0:
+                 policy.reset()
++                self.reset_txs()
+                 policy.reset_dqn_state()
+                 episode_reward = 0
+                 hidden = None
+@@ -129,7 +135,9 @@ class Environment:
+                     if args.mode == 'train':
+                         policy.agent.learn()
+                         episole = init_episole - 0.6 * (i - self.start_train)/(self.limit - self.start_train)
+-
++            if i % 2000 == 0:
++                self.reset_txs()
++            
+             if time.time() - start_time >= args.limit_time:
+                 break
+ 
+@@ -163,7 +171,7 @@ class Environment:
+         for name in policy.contract_manager.fuzz_contract_names:
+             contract = policy.contract_manager[name]
+             if Method.FALLBACK not in contract.abi.methods_by_name:
+-                tx = Tx(policy_random, contract.name, contract.addresses[0], Method.FALLBACK, bytes(), [], 0, 0, 0, True)
++                tx = Tx(policy_random, contract.name, contract.addresses[0], Method.FALLBACK, bytes(), [], 0, 0, 0, None, True)
+                 logger = policy_random.execution.commit_tx(tx)
+                 obs.update(logger, True)
+                 # LOG.info(obs.stat)
+diff --git a/rlf/fuzzers/random/policy_random.py b/rlf/fuzzers/random/policy_random.py
+index 955db27..2d71369 100644
+--- a/rlf/fuzzers/random/policy_random.py
++++ b/rlf/fuzzers/random/policy_random.py
+@@ -19,7 +19,7 @@ class PolicyRandom(PolicyBase):
+         amount = self._select_amount(contract, method, sender, obs)
+         timestamp = self._select_timestamp(obs)
+ 
+-        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, True)
++        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, None, True)
+         return tx
+ 
+     def select_tx_with_method(self, contract, method, obs):
+@@ -38,7 +38,7 @@ class PolicyRandom(PolicyBase):
+         amount = self._select_amount(contract, method, sender, obs)
+         timestamp = self._select_timestamp(obs)
+ 
+-        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, True)
++        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, None, True)
+         return tx
+ 
+ 
+diff --git a/rlf/fuzzers/reinforcement/policy_reinforcement.py b/rlf/fuzzers/reinforcement/policy_reinforcement.py
+index 0e8620b..9317ff2 100644
+--- a/rlf/fuzzers/reinforcement/policy_reinforcement.py
++++ b/rlf/fuzzers/reinforcement/policy_reinforcement.py
+@@ -183,7 +183,7 @@ class PolicyReinforcement(PolicyBase):
+         reward = ((new_insn_coverage - old_insn_coverage) + (new_block_coverage - old_block_coverage))
+         x_state, x_method, contract = self.compute_state(obs)
+ 
+-        return x_state, reward, np.float(destruct), x_method, contract
++        return x_state, reward, np.float64(destruct), x_method, contract
+ 
+     def select_tx(self, x_state, x_method, contract, obs, hidden=None, frandom=False, episole=0.3):
+ 
+@@ -219,7 +219,7 @@ class PolicyReinforcement(PolicyBase):
+ 
+         self.last_method[contract.name] = pred_f
+ 
+-        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, True)
++        tx = Tx(self, contract.name, address, method.name, bytes(), arguments, amount, sender, timestamp, None, True)
+         # print(method.name,arguments,amount,sender)
+         return tx, action, new_hidden
+ 
+diff --git a/rlf/fuzzers/stat.py b/rlf/fuzzers/stat.py
+index 19f72b5..3109e70 100644
+--- a/rlf/fuzzers/stat.py
++++ b/rlf/fuzzers/stat.py
+@@ -1,10 +1,13 @@
+ import json
++import time
+ 
+ from collections import OrderedDict
+ from .checkers import *
+ 
+ from ..ethereum import SELFDESTRUCT
+ 
++DEPLOYER_ADDRESS = '0x2fE5e54E71755A9719FD5B06c8697CeFa1283165'
++
+ 
+ # the state of the fuzzer
+ class Stat:
+@@ -15,6 +18,7 @@ class Stat:
+     def __init__(self, contract_manager, account_manager):
+         self.contract_manager = contract_manager
+         self.account_manager = account_manager
++        self.deployer_address_int = int(DEPLOYER_ADDRESS, 16)
+ 
+         self.tx_count = 0
+         self.tx_count_dict = dict() # the num of calling of the contract
+@@ -38,10 +42,20 @@ class Stat:
+             self.covered_blocks_dict[name] = set()
+             self.temp_covered_blocks_dict[name] = set()
+ 
++        # Track if deployer sent TX (excluding constructor) per contract
++        self.deployer_tx_sent = dict()
++        for name in contract_manager.contract_dict:
++            self.deployer_tx_sent[name] = False
++
+         self.bug_res = dict()
+         for name in contract_manager.contract_dict:
+             self.bug_res[name] = dict()
+ 
++        # Bug tracking for deduplication
++        self.start_time = time.time()
++        self.logged_leaking = set()  # method names
++        self.logged_suicidal = set()  # pc values
++
+         self.update_bug = dict()
+         self.checkers = [
+             BlockStateDep(),
+@@ -60,6 +74,31 @@ class Stat:
+         for name in self.contract_manager.contract_dict:
+             self.temp_covered_blocks_dict[name] = set()
+ 
++        # Reset deployer TX tracking per episode
++        for name in self.contract_manager.contract_dict:
++            self.deployer_tx_sent[name] = False
++
++    def _is_deployer_sender(self, tx):
++        sender_address = self.account_manager[tx.sender].address
++        return sender_address.lower() == DEPLOYER_ADDRESS.lower()
++
++    def _is_deployer_inheritor(self, checker):
++        return checker.last_inheritor == self.deployer_address_int
++
++    def _dump_bug(self, sig, pc, method):
++        elapsed = time.time() - self.start_time
++        s = int(elapsed)
++        d = s // 86400
++        s = s - (d * 86400)
++        h = s // 3600
++        s = s - (h * 3600)
++        m = s // 60
++        s = s - (m * 60)
++        time_str = '%02d:%02d:%02d:%02d' % (d, h, m, s)
++        msg = '[%s] Found %s at %s\n'
++        with open('/home/test/rlf-workspace/output/log.txt', 'a+') as f:
++            f.write(msg % (time_str, sig, method))
++
+     def update(self, logger):
+         """
+         update the coverage of insn and block
+@@ -111,12 +150,34 @@ class Stat:
+ 
+         for checker in self.checkers:
+             if checker.check(logger):
+-                if checker.__class__.__name__ not in self.bug_res[logger.tx.contract]:
+-                    self.bug_res[logger.tx.contract][checker.__class__.__name__] = set()
+-                if checker.__class__.__name__ not in self.update_bug:
+-                    self.update_bug[checker.__class__.__name__] = set()
+-                self.bug_res[logger.tx.contract][checker.__class__.__name__].add(logger.tx.method)
+-                self.update_bug[checker.__class__.__name__].add(logger.tx.method)
++                checker_name = checker.__class__.__name__
++                
++                # Skip Leaking/Suicidal if deployer sent TX before this bug
++                if checker_name in ['Leaking', 'Suicidal'] and self.deployer_tx_sent[logger.tx.contract]:
++                    continue
++
++                # Smartian suicidal oracle: ~IsDeployer(inheritor)
++                if checker_name == 'Suicidal' and self._is_deployer_inheritor(checker):
++                    continue
++                
++                # Log bug to file (with deduplication)
++                if checker_name == 'Leaking' and logger.tx.method not in self.logged_leaking:
++                    self._dump_bug('EtherLeak', 0, logger.tx.method)
++                    self.logged_leaking.add(logger.tx.method)
++                elif checker_name == 'Suicidal' and checker.last_pc not in self.logged_suicidal:
++                    self._dump_bug('SuicidalContract', checker.last_pc, logger.tx.method)
++                    self.logged_suicidal.add(checker.last_pc)
++                
++                if checker_name not in self.bug_res[logger.tx.contract]:
++                    self.bug_res[logger.tx.contract][checker_name] = set()
++                if checker_name not in self.update_bug:
++                    self.update_bug[checker_name] = set()
++                self.bug_res[logger.tx.contract][checker_name].add(logger.tx.method)
++                self.update_bug[checker_name].add(logger.tx.method)
++
++        # Track deployer TX (by address, excluding constructor) - after bug check
++        if self._is_deployer_sender(logger.tx) and logger.tx.method != 'constructor':
++            self.deployer_tx_sent[logger.tx.contract] = True
+ 
+         return destruct, executed_pcs, executed_blocks
+ 
+@@ -225,4 +286,4 @@ class Stat:
+         all_blocks = len(self.contract_manager[contract_name].cfg.blocks)
+         covered_blocks = len(self.temp_covered_blocks_dict[contract_name])
+         coverage_blocks = covered_blocks / all_blocks
+-        return coverage_insns, coverage_blocks
+\ No newline at end of file
++        return coverage_insns, coverage_blocks
+diff --git a/script/extract.py b/script/extract.py
+index 1b30da7..2e1a891 100644
+--- a/script/extract.py
++++ b/script/extract.py
+@@ -93,7 +93,7 @@ def extract_transactions():
+         generate_the_migrations(fuzz_contract=args.fuzz_contract)
+ 
+     subprocess.call('truffle deploy', shell=True)
+-    extract_js_path = os.path.join(os.environ['GOPATH'], 'src', 'ilf', 'script', 'extract.js')
++    extract_js_path = os.path.join(os.environ['GOPATH'], 'src', 'rlf', 'script', 'extract.js')
+     subprocess.call('truffle exec {}'.format(extract_js_path), shell=True)
+ 
+ def generate_the_migrations(fuzz_contract):

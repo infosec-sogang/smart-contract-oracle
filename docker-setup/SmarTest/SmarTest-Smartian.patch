@@ -1,0 +1,502 @@
+diff --git a/src/checker/collectQuery.ml b/src/checker/collectQuery.ml
+index e7e0491..bc6ccfe 100644
+--- a/src/checker/collectQuery.ml
++++ b/src/checker/collectQuery.ml
+@@ -7,7 +7,7 @@ let collect : Global.t -> cfg -> vformula -> Path.t -> Node.t -> query list
+ = fun global g vf path node ->
+   let stmt = find_stmt node g in
+   let re = if !check_re && BatSet.mem node g.extern_set then ReEntrancy.collect_queries global vf path g node else [] in
+-  let leak = if !check_leak then Leaking.collect_queries vf path stmt else [] in
++  let leak = if !check_leak then Leaking.collect_queries global vf path stmt else [] in
+   let kill = if !check_kill then Destruct.collect_queries vf path (find_stmt node g) else [] in
+   let assertion = if !check_assert || !check_erc20 then Assertion.collect_queries global vf path (find_stmt node g) else [] in
+   let overflow = if !check_io || !check_dz then Overflow.collect_queries vf path (find_stmt node g) else [] in
+diff --git a/src/checker/collectQuery2.ml b/src/checker/collectQuery2.ml
+index 12d5c80..f9a771e 100644
+--- a/src/checker/collectQuery2.ml
++++ b/src/checker/collectQuery2.ml
+@@ -8,7 +8,7 @@ let collect ?(extern_ctx=false) : Global.t -> cfg -> vformula -> Path.t -> Node.
+   let stmt = find_stmt node g in
+   let re = if !check_re then ReEntrancy.collect_queries ~extern_ctx:extern_ctx global vf path g node else [] in
+   let tx = if !check_tx then TxOrigin.collect_queries global vf path g node else [] in
+-  let leak = if !check_leak then Leaking.collect_queries vf path stmt else [] in
++  let leak = if !check_leak then Leaking.collect_queries global vf path stmt else [] in
+   let kill = if !check_kill then Destruct.collect_queries vf path (find_stmt node g) else [] in
+   let assertion = if !check_assert || !check_erc20 then Assertion.collect_queries global vf path (find_stmt node g) else [] in
+   let overflow = if !check_io || !check_dz then Overflow.collect_queries vf path (find_stmt node g) else [] in
+diff --git a/src/checker/destruct.ml b/src/checker/destruct.ml
+index 676a85b..25a7f7b 100644
+--- a/src/checker/destruct.ml
++++ b/src/checker/destruct.ml
+@@ -11,7 +11,17 @@ let collect_queries : vformula -> Path.t -> stmt -> query list
+   | Call (lvop,Lv (Var (fname,_)),args,_,_,loc,_)
+     when List.mem fname ["selfdestruct";"suicide"] ->
+     let _ = assert (no_eth_gas_modifiers stmt) in
+-    let sc = VBinRel (VEq, Read (VVar trust_map, VVar ("msg.sender", EType Address)), VCond VTrue) in
++    let sc =
++      if !Options.mode = "exploit" then
++        let _ = assert (List.length args = 1) in
++        let _ = assert (is_address (get_type_exp (List.hd args))) in
++        let inheritor = convert_aexp (List.hd args) in
++        let inheritor_is_deployer = VBinRel (VEq, inheritor, VVar deployer) in
++        let deployer_called_before = VBinRel (VEq, VVar deployer_called, VCond VTrue) in
++        VOr (inheritor_is_deployer, deployer_called_before)
++      else
++        VBinRel (VEq, Read (VVar trust_map, VVar ("msg.sender", EType Address)), VCond VTrue)
++    in
+     let vc = Imply (vf,sc) in
+     [{vc=vc; vc2=sc; kind=KILL; qloc=loc.line; org_q=Org_Stmt stmt; path=path; src_f=Path.get_fkey path;
+       sc_src=""; attacker_src=""; eth_src=""}]
+diff --git a/src/checker/leaking.ml b/src/checker/leaking.ml
+index b713437..1a02994 100644
+--- a/src/checker/leaking.ml
++++ b/src/checker/leaking.ml
+@@ -5,10 +5,88 @@ open Report
+ open Global
+ open Semantics
+ 
+-(* safety condition: @TU[rcv] \/ @Invested[rcv] >= eth to be sent *)
++let rec is_msg_sender_exp : exp -> bool
++= function
++  | Lv (MemberAccess (Lv (Var (x,_)), "sender", _, _)) when BatString.equal x "msg" -> true
++  | Lv (Var (x,vinfo)) ->
++    BatString.equal x (fst msg_sender)
++    || (match vinfo.org with
++        | Some e -> is_msg_sender_exp e
++        | None -> false)
++  | Cast (_, e) -> is_msg_sender_exp e
++  | _ -> false
+ 
+-let collect_queries : vformula -> Path.t -> stmt -> query list
+-= fun vf path stmt ->
++let rec is_other_addr_exp : exp -> bool
++= function
++  | Lv (Var (_,vinfo)) as e ->
++    (is_address (get_type_exp e) && not (is_msg_sender_exp e))
++    || (match vinfo.org with
++        | Some e' -> is_other_addr_exp e'
++        | None -> false)
++  | Cast (_, e) -> is_other_addr_exp e
++  | e -> is_address (get_type_exp e) && not (is_msg_sender_exp e)
++
++let is_sender_addr_compare_exp : exp -> exp -> bool
++= fun e1 e2 ->
++  (is_msg_sender_exp e1 && is_other_addr_exp e2)
++  || (is_msg_sender_exp e2 && is_other_addr_exp e1)
++
++let rec has_sender_addr_compare_exp : exp -> bool
++= function
++  | BinOp (NEq, e1, e2, _) -> is_sender_addr_compare_exp e1 e2
++  | BinOp (_, e1, e2, _) -> has_sender_addr_compare_exp e1 || has_sender_addr_compare_exp e2
++  | UnOp (_, e, _) -> has_sender_addr_compare_exp e
++  | Cast (_, e) -> has_sender_addr_compare_exp e
++  | CondTemp (e1,e2,e3,_,_) ->
++    has_sender_addr_compare_exp e1
++    || has_sender_addr_compare_exp e2
++    || has_sender_addr_compare_exp e3
++  | AssignTemp (_, e, _) -> has_sender_addr_compare_exp e
++  | CallTemp (e,args,ethop,gasop,_) ->
++    has_sender_addr_compare_exp e
++    || List.exists has_sender_addr_compare_exp args
++    || BatOption.default false (BatOption.map has_sender_addr_compare_exp ethop)
++    || BatOption.default false (BatOption.map has_sender_addr_compare_exp gasop)
++  | Lv _ | Int _ | Real _ | Str _ | True | False | ETypeName _ | IncTemp _ | DecTemp _ -> false
++
++let has_sender_if_guard_before : Global.t -> Path.t -> stmt -> bool
++= fun global path target_stmt ->
++  let func = FuncMap.find (Path.get_fkey path) global.fmap in
++  let g = Lang.get_cfg func in
++  let same_stmt s1 s2 =
++    match s1, s2 with
++    | Call (_,_,_,_,_,loc1,id1), Call (_,_,_,_,_,loc2,id2) ->
++      id1 = id2
++      || (loc1.line = loc2.line && loc1.offset = loc2.offset && loc1.len = loc2.len)
++    | _ -> s1 = s2
++  in
++  let rec loop = function
++    | [] -> false
++    | node::tl ->
++      let stmt = find_stmt node g in
++      if same_stmt stmt target_stmt then false
++      else
++        (match stmt with
++         | Assume (e, loc) when loc <> dummy_loc ->
++           if has_sender_addr_compare_exp e then true else loop tl
++         | _ -> loop tl)
++  in
++  loop (Path.get_bp path)
++
++let exploit_sc : bool -> vexp -> vexp -> vexp -> vformula
++= fun sender_guarded rcv stolen_eth after_bal ->
++  let rcv_trust = VBinRel (VEq, Read (VVar trust_map, rcv), VCond VTrue) in
++  let rcv_invested = VBinRel (VGeq, Read (VVar invest_map, rcv), stolen_eth) in
++  let sender_not_receiver = VNot (VBinRel (VEq, rcv, VVar msg_sender)) in
++  let sender_bal_init = Read (VVar init_eth_map, VVar msg_sender) in
++  let sender_not_inc_from_init = VBinRel (VGeq, sender_bal_init, after_bal) in
++  let trusted_called_before = VBinRel (VEq, VVar trusted_called, VCond VTrue) in
++  let sender_guarded = if sender_guarded then VTrue else VFalse in
++  VOr (VOr (VOr (VOr (VOr (rcv_trust, rcv_invested), sender_guarded), sender_not_receiver), trusted_called_before),
++       sender_not_inc_from_init)
++
++let collect_queries : Global.t -> vformula -> Path.t -> stmt -> query list
++= fun global vf path stmt ->
+   match stmt with
+   | Call (lvop,Lv (MemberAccess (e,fname,_,_)),args,_,_,loc,_)
+     when is_address (get_type_exp e) && List.mem fname ["transfer";"send"] ->
+@@ -20,14 +98,17 @@ let collect_queries : vformula -> Path.t -> stmt -> query list
+       | BinOp (Mul, Lv v1, Lv (Var (v,_)), _) when BatString.starts_with v "sellPrice" -> Lv v1
+       | _ -> stolen_eth in
+     let rcv = convert_aexp e in
+-    let rcv_trust = VBinRel (VEq, Read (VVar trust_map, rcv), VCond VTrue) in
+-    (* let invalid_rcv = VBinRel (VEq, rcv, VInt BatBig_int.zero) in *)
+-    let rcv_invested =
+-      if !Options.mode = "exploit" then VBinRel (VGeq, Read (VVar invest_map, rcv), convert_aexp stolen_eth)
+-      else if !Options.mode = "verify" then VBinRel (VGeq, VVar invest_sum, convert_aexp stolen_eth')
++    let sc =
++      if !Options.mode = "exploit" then
++        let after_bal = Read (VVar (label_var_exit eth_map), VVar msg_sender) in
++        let sender_guarded = has_sender_if_guard_before global path stmt in
++        exploit_sc sender_guarded rcv (convert_aexp stolen_eth) after_bal
++      else if !Options.mode = "verify" then
++        let rcv_trust = VBinRel (VEq, Read (VVar trust_map, rcv), VCond VTrue) in
++        let rcv_invested = VBinRel (VGeq, VVar invest_sum, convert_aexp stolen_eth') in
++        let zero_ether = VBinRel (VEq, convert_aexp stolen_eth, VInt BatBig_int.zero) in
++        VOr (VOr (rcv_trust, rcv_invested), zero_ether)
+       else assert false in
+-    let zero_ether = VBinRel (VEq, convert_aexp stolen_eth, VInt BatBig_int.zero) in
+-    let sc = VOr (VOr (rcv_trust, rcv_invested), zero_ether) in
+     let vc = Imply (vf, sc) in
+     let rcv_src = to_string_exp ~report:true e in
+     let stolen_eth_src = to_string_exp ~report:true stolen_eth in
+@@ -38,13 +119,17 @@ let collect_queries : vformula -> Path.t -> stmt -> query list
+     when is_address (get_type_exp e) ->
+     let stolen_eth = eth in
+     let rcv = convert_aexp e in
+-    let rcv_trust = VBinRel (VEq, Read (VVar trust_map, rcv), VCond VTrue) in
+-    let rcv_invested =
+-      if !Options.mode = "exploit" then VBinRel (VGeq, Read (VVar invest_map, rcv), convert_aexp stolen_eth)
+-      else if !Options.mode = "verify" then VBinRel (VGeq, VVar invest_sum, convert_aexp stolen_eth)
++    let sc =
++      if !Options.mode = "exploit" then
++        let after_bal = Read (VVar (label_var_exit eth_map), VVar msg_sender) in
++        let sender_guarded = has_sender_if_guard_before global path stmt in
++        exploit_sc sender_guarded rcv (convert_aexp stolen_eth) after_bal
++      else if !Options.mode = "verify" then
++        let rcv_trust = VBinRel (VEq, Read (VVar trust_map, rcv), VCond VTrue) in
++        let rcv_invested = VBinRel (VGeq, VVar invest_sum, convert_aexp stolen_eth) in
++        let zero_ether = VBinRel (VEq, convert_aexp stolen_eth, VInt BatBig_int.zero) in
++        VOr (VOr (rcv_trust, rcv_invested), zero_ether)
+       else assert false in
+-    let zero_ether = VBinRel (VEq, convert_aexp stolen_eth, VInt BatBig_int.zero) in
+-    let sc = VOr (VOr (rcv_trust, rcv_invested), zero_ether) in
+     let vc = Imply (vf, sc) in
+     let rcv_src = to_string_exp ~report:true e in
+     let stolen_eth_src = to_string_exp ~report:true stolen_eth in
+@@ -58,10 +143,19 @@ let collect_queries : vformula -> Path.t -> stmt -> query list
+     let _ = assert (no_eth_gas_modifiers stmt) in
+     let rcv_exp = List.hd args in
+     let rcv = convert_aexp rcv_exp in
+-    let rcv_trust = VBinRel (VEq, Read (VVar trust_map, rcv), VCond VTrue) in
+-    let rcv_invested = VBinRel (VGeq, Read (VVar invest_map, rcv), Read (VVar eth_map, VVar this_addr)) in
+-    let zero_ether = VBinRel (VEq, Read (VVar eth_map, VVar this_addr), VInt BatBig_int.zero) in
+-    let sc = VOr (VOr (rcv_trust, rcv_invested), zero_ether) in
++    let stolen_eth = Read (VVar eth_map, VVar this_addr) in
++    let sc =
++      if !Options.mode = "exploit" then
++        let sender_bal_prev = Read (VVar eth_map, VVar msg_sender) in
++        let after_bal = VBinOp (VAdd, sender_bal_prev, stolen_eth, EType (UInt 256)) in
++        let sender_guarded = has_sender_if_guard_before global path stmt in
++        exploit_sc sender_guarded rcv stolen_eth after_bal
++      else if !Options.mode = "verify" then
++        let rcv_trust = VBinRel (VEq, Read (VVar trust_map, rcv), VCond VTrue) in
++        let rcv_invested = VBinRel (VGeq, Read (VVar invest_map, rcv), stolen_eth) in
++        let zero_ether = VBinRel (VEq, stolen_eth, VInt BatBig_int.zero) in
++        VOr (VOr (rcv_trust, rcv_invested), zero_ether)
++      else assert false in
+     let vc = Imply (vf, sc) in
+     let rcv_src = to_string_exp ~report:true rcv_exp in
+     [{vc=vc; vc2=sc; kind=ETH_LEAK; qloc=loc.line; org_q=Org_Stmt stmt; path=path; src_f=Path.get_fkey path;
+diff --git a/src/exploit/execTran.ml b/src/exploit/execTran.ml
+index 2a0a8bb..5bf9b33 100644
+--- a/src/exploit/execTran.ml
++++ b/src/exploit/execTran.ml
+@@ -242,6 +242,12 @@ let init_balance_if_cnstr : func -> vformula
+     VBinRel (VEq, Read (VVar eth_map, VVar this_addr), VInt !contract_init_eth)
+   else VTrue
+ 
++let init_initial_balance_if_cnstr : func -> vformula
++= fun func ->
++  if is_constructor func then
++    VBinRel (VEq, VVar init_eth_map, VVar eth_map)
++  else VTrue
++
+ let inc_balance_if_payable : func -> vformula -> vformula
+ = fun func vf ->
+   if is_payable func then
+@@ -259,9 +265,56 @@ let inc_balance_if_payable : func -> vformula -> vformula
+ let balance_constraint : func -> vformula -> vformula
+ = fun func vf ->
+   let vf = VAnd (vf, init_balance_if_cnstr func) in
++  let vf = VAnd (vf, init_initial_balance_if_cnstr func) in
+   let vf = inc_balance_if_payable func vf in
+   vf
+ 
++let init_deployer_if_cnstr : func -> vformula
++= fun func ->
++  if is_constructor func then
++    VAnd (VBinRel (VEq, VVar deployer, VVar msg_sender),
++          VBinRel (VEq, VVar deployer_called, VCond VFalse))
++  else VTrue
++
++let update_deployer_called : func -> vformula -> vformula
++= fun func vf ->
++  if is_constructor func then vf
++  else
++    let target = VVar deployer_called in
++    let replacement = rename target in
++    let vf' = rewrite_vf vf target replacement in
++    let new_val = Ite (VCond (VBinRel (VEq, VVar msg_sender, VVar deployer)), VCond VTrue, replacement) in
++    VAnd (vf', Label (1, VBinRel (VEq, target, new_val)))
++
++let deployer_constraint : func -> vformula -> vformula
++= fun func vf ->
++  let vf = VAnd (vf, init_deployer_if_cnstr func) in
++  let vf = update_deployer_called func vf in
++  vf
++
++let init_trusted_called_if_cnstr : func -> vformula
++= fun func ->
++  if is_constructor func then
++    VBinRel (VEq, VVar trusted_called, VCond VFalse)
++  else VTrue
++
++let update_trusted_called : func -> vformula -> vformula
++= fun func vf ->
++  if is_constructor func then vf
++  else
++    let target = VVar trusted_called in
++    let replacement = rename target in
++    let vf' = rewrite_vf vf target replacement in
++    let sender_is_trusted = VBinRel (VEq, Read (VVar trust_map, VVar msg_sender), VCond VTrue) in
++    let new_val = Ite (VCond sender_is_trusted, VCond VTrue, replacement) in
++    VAnd (vf', Label (1, VBinRel (VEq, target, new_val)))
++
++let trusted_called_constraint : func -> vformula -> vformula
++= fun func vf ->
++  let vf = VAnd (vf, init_trusted_called_if_cnstr func) in
++  let vf = update_trusted_called func vf in
++  vf
++
+ let valid_sender () =
+   Label (1, VNot (VBinRel (VEq, VVar msg_sender, VInt BatBig_int.zero)))
+ 
+@@ -331,6 +384,8 @@ let add_aux_constraint : Global.t -> func -> var list -> vformula -> vformula
+   let vf = VAnd (vf, trusted_user_constraint func ivars global.hc_addrs) in
+   let vf = balance_constraint func vf in
+   let vf = investor_constraint func vf in
++  let vf = deployer_constraint func vf in
++  let vf = trusted_called_constraint func vf in
+   vf
+ 
+ (* addresses defined in cnstrs are trusted accounts. *)
+diff --git a/src/exploit/exploit.ml b/src/exploit/exploit.ml
+index b51d77f..343c711 100644
+--- a/src/exploit/exploit.ml
++++ b/src/exploit/exploit.ml
+@@ -93,14 +93,20 @@ let rec work : Global.t -> TypeRank.t -> string BatSet.t -> count_maps ->
+     let workset = Workset.remove_min workset in
+     let (state,queries) = exec_transactions global tseq in
+     let qmap = inspect_queries global tseq queries qmap in
+-    let nexts = next state global paths tseq in
+-    let nexts = List.filter (fun tseq -> not (tseq_contain_extern_log global (BatList.take (BatList.length tseq - 1) tseq))) nexts in
+-    let dup_exist = List.exists (fun next_tseq -> (BatSet.mem (List.map fst next_tseq) explored)) nexts in
+-    let _ = assert (not dup_exist) in (* invariant: duplicated sequences are not enumerated *)
+-    let explored = List.fold_left (fun acc next_tseq -> BatSet.add (List.map fst next_tseq) acc) explored nexts in
+-    let nexts = List.map (fun next -> (compute_cost global rank dict counts next, next)) nexts in
+-    let workset = List.fold_left Workset.add workset nexts in
+-    work global rank dict counts paths explored workset qmap
++    let vul_qs = QMap.bindings qmap in
++    let vul_found = List.filter (fun ((kind,loc,s), (stat,_,_,_,_,_,_,_,_)) -> stat = Disproven && (List.exists (fun (bk,bl) -> bk = to_string_kind_simple kind && (bl = string_of_int loc || BatString.exists s bl)) !blst)) vul_qs in
++    if List.length vul_found > 0 then
++      let _ = earlyTerminated := true in
++      qmap
++    else
++      let nexts = next state global paths tseq in
++      let nexts = List.filter (fun tseq -> not (tseq_contain_extern_log global (BatList.take (BatList.length tseq - 1) tseq))) nexts in
++      let dup_exist = List.exists (fun next_tseq -> (BatSet.mem (List.map fst next_tseq) explored)) nexts in
++      let _ = assert (not dup_exist) in (* invariant: duplicated sequences are not enumerated *)
++      let explored = List.fold_left (fun acc next_tseq -> BatSet.add (List.map fst next_tseq) acc) explored nexts in
++      let nexts = List.map (fun next -> (compute_cost global rank dict counts next, next)) nexts in
++      let workset = List.fold_left Workset.add workset nexts in
++      work global rank dict counts paths explored workset qmap
+ 
+ let scan_node : Global.t -> cfg -> Path.t -> Node.t -> query list
+ = fun global g path node -> CollectQuery.collect global g VTrue path node
+diff --git a/src/exploit/exploitUtils.ml b/src/exploit/exploitUtils.ml
+index cefc13f..dbcd5c4 100644
+--- a/src/exploit/exploitUtils.ml
++++ b/src/exploit/exploitUtils.ml
+@@ -98,24 +98,27 @@ let violation_found : query -> QMap.t -> bool
+ 
+ let choose_final_vc : query -> vformula
+ = fun q ->
+-  if !Options.refined_vcgen then
+-    match q.kind with
+-    | IO -> q.vc2
+-    | DZ -> q.vc
+-    | ASSERT -> q.vc
+-    | KILL -> q.vc
+-    | ETH_LEAK ->
+-      (match q.org_q with
+-       | Org_Stmt (Call (lvop,Lv (Var (fname,_)),args,_,_,loc,_))
+-         when List.mem fname ["selfdestruct";"suicide"] -> q.vc
+-       | Org_Stmt (Call (lvop,Lv (MemberAccess (e,fname,_,_)),args,_,_,loc,_))
+-         when is_address (get_type_exp e) && List.mem fname ["transfer";"send"] -> q.vc2
+-       | Org_Stmt (Call (lvop, Lv (MemberAccess (e,"call",_,_)), args, Some eth, gasop, loc, id))
+-         when is_address (get_type_exp e) -> q.vc2
+-       | _ -> assert false)
+-    | ERC20 -> q.vc
+-    | RE_EL | RE | TX_ORG -> failwith "NotImplemented"
+-  else q.vc
++  match q.kind with
++  | ETH_LEAK ->
++    (match q.org_q with
++     | Org_Stmt (Call (_,Lv (Var (fname,_)),_,_,_,_,_))
++       when List.mem fname ["selfdestruct";"suicide"] -> q.vc
++     | Org_Stmt (Call (_,Lv (MemberAccess (e,fname,_,_)),_,_,_,_,_))
++       when is_address (get_type_exp e) && List.mem fname ["transfer";"send"] -> q.vc2
++     | Org_Stmt (Call (_, Lv (MemberAccess (e,"call",_,_)), _, Some _, _, _, _))
++       when is_address (get_type_exp e) -> q.vc2
++     | _ -> assert false)
++  | _ ->
++    if !Options.refined_vcgen then
++      match q.kind with
++      | IO -> q.vc2
++      | DZ -> q.vc
++      | ASSERT -> q.vc
++      | KILL -> q.vc
++      | ERC20 -> q.vc
++      | ETH_LEAK -> assert false
++      | RE_EL | RE | TX_ORG -> failwith "NotImplemented"
++    else q.vc
+ 
+ let inspect_queries : Global.t -> transaction list -> query list -> QMap.t -> QMap.t
+ = fun global tseq queries qmap ->
+diff --git a/src/exploit/reportExploit.ml b/src/exploit/reportExploit.ml
+index ee44c23..3af7952 100644
+--- a/src/exploit/reportExploit.ml
++++ b/src/exploit/reportExploit.ml
+@@ -384,19 +384,26 @@ let report ~pathnum : Global.t -> QMap.t -> string list -> unit
+   let vul_found = List.filter (fun ((kind,_,_),(stat,_,_,_,_,_,_,_,_)) -> stat = Disproven) vul_qs in
+   print_endline "";
+   report_interface_deviation ();
+-  print_endline "=== Report ===";
++  if !earlyTerminated then
++    print_endline "=== Report (early termination) ==="
++  else print_endline "=== Report ===";
+   List.iteri (fun i ((kind,loc,_) as src, (stat, tseq, mop, vc, sc_src, attacker_src, stolen_eth_src, time, validated)) ->
+     let s1 = "[" ^ string_of_int (i+1) ^ "]" ^ " " ^ "[" ^ Query.to_string_kind_simple kind ^ "]" ^ " " in
+-    let s2 = Query.to_string_src src ^ " : " ^ to_string_status stat ^ (if not (stat = UnProven) then ", " ^ string_of_float time ^ "s" else "") in
+-    print_endline (s1 ^ s2);
+     if stat = Disproven then
++      let last_tx = BatList.last tseq in
++      let last_tx_fname = get_fname (FuncMap.find (Path.get_fkey (get_path last_tx)) global.fmap) in
++      let s2 = Query.to_string_src src ^ ", {" ^ last_tx_fname ^ "} : " ^ to_string_status stat ^ (if not (stat = UnProven) then ", " ^ string_of_float time ^ "s" else "") in
++      print_endline (s1 ^ s2);
+       let attacks,json = retrieve global tseq (remove_some mop) loc in
+       let trusted = get_trusted_account global tseq (remove_some mop) in
+       let invested = get_invested global tseq (remove_some mop) in
+       let _ = mk_tx_output (i+1) kind loc (remove_some mop) vc trusted invested attacks json in
+       let _ = mk_test_sol global kind (i+1) lines loc sc_src attacker_src stolen_eth_src in
+       print_endline (to_string_attacks attacks)
+-    else print_endline ""
++    else
++      let s2 = Query.to_string_src src ^ " : " ^ to_string_status stat ^ (if not (stat = UnProven) then ", " ^ string_of_float time ^ "s" else "") in
++      print_endline (s1 ^ s2);
++      print_endline ""
+   ) vul_qs;
+   print_endline "=== Statistics ===";
+   print_endline ("# Iter                 : " ^ string_of_int !iter);
+diff --git a/src/frontend/translator.ml b/src/frontend/translator.ml
+index 600b7b5..f158909 100644
+--- a/src/frontend/translator.ml
++++ b/src/frontend/translator.ml
+@@ -448,7 +448,8 @@ and trans_expressionStatement : Yojson.Basic.t -> stmt
+            (* Built-in function checkers. Lists need to be updated. *)
+            if is_require exp then
+              (assert (List.length args = 1 || List.length args = 2);
+-              If (List.hd args, Skip, Throw, {if_loc=loc;if_tloc=loc; if_floc=Some loc}))
++              Seq (Assert (List.hd args, "require", get_loc json'),
++                   If (List.hd args, Skip, Throw, {if_loc=loc;if_tloc=loc; if_floc=Some loc})))
+            else if is_assert exp then
+              (assert (List.length args = 1);
+               Seq (Assert (List.hd args, "default", get_loc json'),
+diff --git a/src/util/options.ml b/src/util/options.ml
+index 83a0fc7..52eef50 100644
+--- a/src/util/options.ml
++++ b/src/util/options.ml
+@@ -46,6 +46,12 @@ let refined_vcgen = ref false
+ 
+ let outdir = ref ""
+ 
++module BugMap = Map.Make(String)
++
++let blst: (string * string) list ref = ref [] (* [(IO,"124"); (ETH_LEAK,"withdraw")] *)
++
++let earlyTerminated = ref false
++
+ let activate_detector s =
+   match s with
+   | "all" -> (* all but invalid assignment, reg checking *)
+@@ -86,6 +92,18 @@ let set_mode s =
+   | "verify" | "exploit" -> mode:=s
+   | _ -> invalid_arg "improper arguments for run mode. Should be one of {verify, exploit}"
+ 
++let parse_bugs s =
++  let l = Str.split (Str.regexp ",") s in (* IO:124/155,DZ:132 *)
++  List.iter (fun x ->
++      let l = Str.split (Str.regexp ":") x in (* [IO; 124/155] *)
++      match l with
++      | [bug; loc] ->
++        let locs = Str.split (Str.regexp "/") loc in
++        List.iter (fun loc -> blst := (bug, loc)::!blst) locs
++      | _ -> invalid_arg ("invalid bug format: " ^ x)
++  ) l;
++  !blst
++
+ let options =
+   [
+     ("-input", Arg.String (fun s -> inputfile := s), "inputfile containing your examples");
+@@ -122,4 +140,7 @@ let options =
+     ("-enforce_init_eth", Arg.Set enforce_init_eth, "do not modify contract ether values (default: false)");
+     ("-refined_vcgen", Arg.Set refined_vcgen, "generate vcs that consider normal terminations of transactions.");
+     ("-outdir", Arg.String (fun s -> outdir:= s), "directory where analysis outputs are stored");
++    ("-target_bug", Arg.String (fun s -> blst := parse_bugs s), "Target bugs to detect (pairs of bug type and instruction address)\n\
++                                                                IO(Interger Over/Underflow), DZ(Division-by-Zero), ASSERT(Assertion Violation), ETH_LEAK(Ether-Leaking), KILL(Suicidal)\n\
++                                                                 e.g., IO:124/155,DZ:132)");
+   ]
+diff --git a/src/vlang/vlang.ml b/src/vlang/vlang.ml
+index a32cf26..835036c 100644
+--- a/src/vlang/vlang.ml
++++ b/src/vlang/vlang.ml
+@@ -399,14 +399,19 @@ let gen_newsym typ =
+ let trust_map = ("@TU", Mapping (Address, EType Bool)) (* trusted user or non-vulnerable user *)
+ let invest_map = ("@Invest", Mapping (Address, EType (UInt 256))) (* addresses that have sent money to contracts *)
+ let eth_map = ("@B", Mapping (Address, EType (UInt 256)))
++let init_eth_map = ("@B0", Mapping (Address, EType (UInt 256)))
+ let this_addr = ("@this", EType Address)
+ let length_map = "@L" (* length variable may have different types *)
+ let contract_account = ("@CA", EType Address)
+ 
+ let invest_sum = ("@Invest_sum", EType (UInt 256))
++let deployer = ("@deployer", EType Address)
++let deployer_called = ("@deployer_called", EType Bool)
++let trusted_called = ("@trusted_called", EType Bool)
+ 
+ let global_ghost_var_names =
+-  ["@TU"; "@Invest"; "@Invest_sum"; "@B"; "@this"; "@L"; "@CA"; "@extern_called"]
++  ["@TU"; "@Invest"; "@Invest_sum"; "@B"; "@B0"; "@this"; "@L"; "@CA"; "@extern_called";
++   "@deployer"; "@deployer_called"; "@trusted_called"]
+ 
+ (* make ghost variable at function entry *)
+ let label_var_entry : var -> var
