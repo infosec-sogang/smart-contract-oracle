@@ -54,12 +54,21 @@ def init_proj(source_path, proj_path, contract_name):
     os.system('mkdir -p {}'.format(migrations_dir))
     shutil.copy(migrations_file_1_path,
                 path.join(migrations_dir, '1_initial_migration.js'))
-    with open(path.join(migrations_dir, '2_deploy_contracts.js'), 'w') as f:
-        f.write(DEPLOY_TEMPLATE % contract_name)
+    with open("/home/test/benchmarks/assets/constructor-arg.list", 'r') as f:
+        if contract_name in f.read():
+            source_name = path.basename(source_path)[:-4]
+            shutil.copy(path.join("/home/test/benchmarks/B-ELSC/js", source_name + ".js"),
+                path.join(migrations_dir, '2_deploy_contracts.js'))
+        else:
+            with open(path.join(migrations_dir, '2_deploy_contracts.js'), 'w') as f:
+                f.write(DEPLOY_TEMPLATE % contract_name)
 
 def deploy_contract(rlf_path, proj_path, contract_name):
     script_path = path.join(rlf_path, 'script', 'extract.py')
     cmd = 'python3 {} --proj {} --port 8545 --fuzz_contract {} '.format(script_path, proj_path, contract_name)
+    with open("/home/test/benchmarks/assets/constructor-arg.list", 'r') as f:
+        if contract_name in f.read():
+            cmd += '--params 0'
     os.system(cmd)
 
 if __name__ == '__main__':
