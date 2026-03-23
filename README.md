@@ -1,4 +1,4 @@
-Artifact for "On the Impact of Test Oracle in Smart Contract Security Testing"
+Test Oracle Impact Experiment for Smart Contracts
 ========
 
 # Experiment
@@ -41,7 +41,8 @@ Here, the script argument specifies the number of repetition for the experiment.
 $ ./scripts/test_ELSC_compare.sh 40
 ```
 
-After the above command finishes, you will obtain the `output/result-EL`
+After the above command finishes, you will obtain the
+`output/result-ELSC-compare`
 directory that contains the raw data. For instance, `Smartian` subdirectory
 contains the result of running Smartian that uses its own test oracle.
 'Smartian-SmarTest' subdirectory contains the result of running Smartian that
@@ -50,5 +51,5 @@ uses SmarTest's test oracle, and so on.
 Now, you can parse the experiment results as below.
 
 ```
-$ python scripts/plot_ELSC_bug.py output/result-EL/Smartian/*
+$ python scripts/plot_ELSC_bug.py output/result-ELSC-compare/Smartian/*
 ```
