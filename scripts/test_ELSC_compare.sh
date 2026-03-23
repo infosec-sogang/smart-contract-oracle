@@ -2,7 +2,7 @@
 
 SCRIPTDIR=$(dirname $0)
 OUTDIR=$(realpath $SCRIPTDIR/../output)
-EXP_NAME="result-EL"
+EXP_NAME="result-ELSC-compare"
 
 if [ "$#" -ne 1 ]; then
     echo "Usage: $0 <iterN>"
