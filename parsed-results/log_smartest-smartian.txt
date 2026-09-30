@@ -1,0 +1,400 @@
+Fully found SuicidalContract from 0x0208a56ea43c3ff6c2611071948794c2674a16b9_1 ( kill ): [3, 3, 3, 3, 3, 3, 3, 3, 2, 4, 3, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 3] sec
+Never found SuicidalContract from 0x0208a56ea43c3ff6c2611071948794c2674a16b9_2 ( kill )
+Fully found SuicidalContract from 0x0208a56ea43c3ff6c2611071948794c2674a16b9_3 ( kill ): [4, 4, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 3, 5, 5, 5, 5] sec
+Never found SuicidalContract from 0x05f8b281410c9327a1bbf508db380fd967c31df6 ( selfdestructs )
+Fully found SuicidalContract from 0x0d0edbcf2c0da25ac9a79c9466989e46a8f96221_1 ( kill ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found SuicidalContract from 0x0d0edbcf2c0da25ac9a79c9466989e46a8f96221_2 ( kill ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Never found SuicidalContract from 0x11eba93a0a852fd34002f5411e1663cf864edb8b_1 ( deprecateContract )
+Never found SuicidalContract from 0x11eba93a0a852fd34002f5411e1663cf864edb8b_2 ( deprecateContract )
+Never found SuicidalContract from 0x11eba93a0a852fd34002f5411e1663cf864edb8b_3 ( deprecateContract )
+Fully found SuicidalContract from 0x2120887e9e4889653770b228ee8d13231d0ef045_1 ( kill ): [20, 19, 26, 24, 30, 30, 27, 27, 30, 29, 29, 29, 29, 30, 31, 29, 29, 29, 31, 28, 27, 30, 30, 27, 28, 29, 28, 18, 28, 31, 30, 28, 27, 28, 31, 28, 31, 29, 29, 28] sec
+Never found SuicidalContract from 0x2120887e9e4889653770b228ee8d13231d0ef045_2 ( kill )
+Fully found SuicidalContract from 0x2120887e9e4889653770b228ee8d13231d0ef045_3 ( kill ): [8, 7, 7, 8, 8, 8, 8, 7, 8, 7, 8, 7, 7, 8, 8, 7, 8, 8, 7, 8, 8, 8, 7, 7, 7, 8, 8, 5, 7, 8, 8, 7, 7, 5, 7, 8, 7, 8, 5, 8] sec
+Fully found SuicidalContract from 0x287fda15f8f002e5df9f536f10bbfc0816960f36_1 ( selfdestructs ): [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 3, 5, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5] sec
+Never found SuicidalContract from 0x287fda15f8f002e5df9f536f10bbfc0816960f36_2 ( selfdestructs )
+Fully found SuicidalContract from 0x287fda15f8f002e5df9f536f10bbfc0816960f36_3 ( selfdestructs ): [4, 4, 4, 4, 4, 4, 4, 3, 4, 3, 4, 4, 4, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] sec
+Never found SuicidalContract from 0x34BC9A332350A41374aa650f1152C8D88e35a878_1 ( collectOwnerWinnings )
+Never found SuicidalContract from 0x34BC9A332350A41374aa650f1152C8D88e35a878_2 ( collectOwnerWinnings )
+Fully found SuicidalContract from 0x42e98f6ed27fc8f76118efb7d4fe9a254bf3bcc9_1 ( close ): [186, 190, 184, 186, 198, 200, 189, 197, 186, 187, 190, 188, 190, 184, 196, 187, 191, 184, 194, 195, 185, 185, 184, 183, 197, 198, 194, 188, 190, 188, 186, 188, 187, 185, 185, 183, 187, 190, 194, 188] sec
+Never found SuicidalContract from 0x42e98f6ed27fc8f76118efb7d4fe9a254bf3bcc9_2 ( close )
+Fully found SuicidalContract from 0x42e98f6ed27fc8f76118efb7d4fe9a254bf3bcc9_3 ( close ): [512, 532, 548, 542, 526, 538, 518, 511, 533, 531, 483, 536, 526, 520, 446, 515, 520, 506, 521, 550, 516, 527, 524, 512, 510, 511, 521, 511, 517, 449, 447, 521, 508, 519, 510, 447, 526, 530, 519, 512] sec
+Fully found SuicidalContract from 0x5f7bb27f7a4702ebce052745cddc1f567ec89e15_1 ( stop ): [230, 223, 196, 235, 222, 225, 229, 241, 231, 265, 240, 247, 229, 234, 224, 236, 234, 227, 243, 223, 225, 224, 228, 174, 237, 224, 242, 245, 237, 232, 174, 224, 222, 233, 221, 252, 224, 236, 235, 235] sec
+Fully found SuicidalContract from 0x5f7bb27f7a4702ebce052745cddc1f567ec89e15_2 ( stop ): [233, 223, 230, 231, 228, 177, 238, 236, 246, 231, 233, 254, 244, 248, 242, 239, 237, 225, 238, 175, 241, 237, 231, 234, 236, 237, 224, 226, 232, 228, 237, 227, 231, 251, 224, 176, 229, 238, 173, 225] sec
+Fully found SuicidalContract from 0x5f7bb27f7a4702ebce052745cddc1f567ec89e15_3 ( stop ): [221, 231, 222, 238, 244, 234, 228, 240, 232, 231, 227, 235, 228, 237, 242, 228, 233, 232, 234, 230, 231, 236, 232, 236, 232, 247, 238, 221, 245, 235, 236, 226, 230, 235, 235, 177, 232, 245, 223, 178] sec
+Fully found SuicidalContract from 0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1 ( destoryContract ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found SuicidalContract from 0x860a8c64cbc7f9aac11428ef8df989f5770cda60_2 ( destoryContract ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found SuicidalContract from 0x860a8c64cbc7f9aac11428ef8df989f5770cda60_3 ( destoryContract ): [4, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3] sec
+Never found SuicidalContract from 0x95195adFb67f28AcFC07CE09eb496188527C0303_2 ( kill )
+Fully found SuicidalContract from 0x95195adFb67f28AcFC07CE09eb496188527C0303_3 ( kill ): [56, 58, 47, 57, 61, 54, 56, 56, 55, 54, 57, 58, 56, 56, 56, 60, 56, 58, 57, 59, 57, 60, 55, 62, 56, 56, 58, 56, 39, 57, 58, 57, 56, 57, 38, 60, 55, 56, 62, 39] sec
+Fully found SuicidalContract from 0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_1 ( finish ): [7, 7, 5, 7, 7, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7] sec
+Never found SuicidalContract from 0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_2 ( finish )
+Fully found SuicidalContract from 0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3 ( finish ): [7, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 6, 6, 9, 9, 9, 9, 6, 9, 9, 9, 9, 6] sec
+Never found SuicidalContract from 0xa78a974b487357ad5c17a072dfee4d31b839b331_1 ( kill )
+Never found SuicidalContract from 0xa78a974b487357ad5c17a072dfee4d31b839b331_2 ( kill )
+Fully found SuicidalContract from 0xb5c0e43a6330b9eb904ec57ea24d70269ae4652e ( destroycontract ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found SuicidalContract from 0xb60e133dacf00b6f560909dc0a5311ae7f9a659b ( kill ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Never found SuicidalContract from 0xead71f4d060ddc7656c959b482fbdfaca95c5d9d ( selfdestructs )
+Never found SuicidalContract from 0xfaf33ee481f6b1f878b68c06181e46a2e9226938_1 ( admin )
+Never found SuicidalContract from 0xfaf33ee481f6b1f878b68c06181e46a2e9226938_2 ( admin )
+Partly found SuicidalContract from 0xfbfa60a21b423cb364de616a37464b61c1bc4c88_1 ( kill ): [6921, 6980] sec
+Never found SuicidalContract from 0xfbfa60a21b423cb364de616a37464b61c1bc4c88_2 ( kill )
+Never found SuicidalContract from 0xfbfa60a21b423cb364de616a37464b61c1bc4c88_3 ( kill )
+Fully found SuicidalContract from 0xfc1078a7bb4521881663df4148434acd991af14c_1 ( destroy ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found SuicidalContract from 0xfc1078a7bb4521881663df4148434acd991af14c_2 ( destroy ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found SuicidalContract from 0xfc1078a7bb4521881663df4148434acd991af14c_3 ( destroy ): [8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 8, 8, 8, 8, 9, 8, 9, 8, 8, 8, 9, 9, 8, 8, 8, 9, 9, 6, 6, 8, 9, 8, 9, 6, 8, 8, 8, 8, 6, 9] sec
+Never found SuicidalContract from parity_wallet_bug_2 ( kill )
+Fully found SuicidalContract from simple_suicide ( sudicideAnyone ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+===================================
+00m: 0.0
+01m: 19.9
+02m: 20.0
+03m: 20.2
+04m: 23.5
+05m: 24.0
+06m: 24.0
+07m: 24.0
+08m: 24.1
+09m: 24.9
+10m: 25.0
+11m: 25.0
+12m: 25.0
+13m: 25.0
+14m: 25.0
+15m: 25.0
+16m: 25.0
+17m: 25.0
+18m: 25.0
+19m: 25.0
+20m: 25.0
+21m: 25.0
+22m: 25.0
+23m: 25.0
+24m: 25.0
+25m: 25.0
+26m: 25.0
+27m: 25.0
+28m: 25.0
+29m: 25.0
+30m: 25.0
+31m: 25.0
+32m: 25.0
+33m: 25.0
+34m: 25.0
+35m: 25.0
+36m: 25.0
+37m: 25.0
+38m: 25.0
+39m: 25.0
+40m: 25.0
+41m: 25.0
+42m: 25.0
+43m: 25.0
+44m: 25.0
+45m: 25.0
+46m: 25.0
+47m: 25.0
+48m: 25.0
+49m: 25.0
+50m: 25.0
+51m: 25.0
+52m: 25.0
+53m: 25.0
+54m: 25.0
+55m: 25.0
+56m: 25.0
+57m: 25.0
+58m: 25.0
+59m: 25.0
+60m: 25.0
+61m: 25.0
+62m: 25.0
+63m: 25.0
+64m: 25.0
+65m: 25.0
+66m: 25.0
+67m: 25.0
+68m: 25.0
+69m: 25.0
+70m: 25.0
+71m: 25.0
+72m: 25.0
+73m: 25.0
+74m: 25.0
+75m: 25.0
+76m: 25.0
+77m: 25.0
+78m: 25.0
+79m: 25.0
+80m: 25.0
+81m: 25.0
+82m: 25.0
+83m: 25.0
+84m: 25.0
+85m: 25.0
+86m: 25.0
+87m: 25.0
+88m: 25.0
+89m: 25.0
+90m: 25.0
+91m: 25.0
+92m: 25.0
+93m: 25.0
+94m: 25.0
+95m: 25.0
+96m: 25.0
+97m: 25.0
+98m: 25.0
+99m: 25.0
+100m: 25.0
+101m: 25.0
+102m: 25.0
+103m: 25.0
+104m: 25.0
+105m: 25.0
+106m: 25.0
+107m: 25.0
+108m: 25.0
+109m: 25.0
+110m: 25.0
+111m: 25.0
+112m: 25.0
+113m: 25.0
+114m: 25.0
+115m: 25.0
+116m: 25.0
+117m: 25.1
+118m: 25.1
+119m: 25.1
+120m: 25.1
+===================================
+Never found EtherLeak from 0x0208a56ea43c3ff6c2611071948794c2674a16b9_1 ( drain )
+Never found EtherLeak from 0x0208a56ea43c3ff6c2611071948794c2674a16b9_1 ( kill )
+Never found EtherLeak from 0x0208a56ea43c3ff6c2611071948794c2674a16b9_3 ( drain )
+Never found EtherLeak from 0x0208a56ea43c3ff6c2611071948794c2674a16b9_3 ( kill )
+Never found EtherLeak from 0x0d0edbcf2c0da25ac9a79c9466989e46a8f96221_1 ( withdrawFunds )
+Never found EtherLeak from 0x0d0edbcf2c0da25ac9a79c9466989e46a8f96221_1 ( kill )
+Fully found EtherLeak from 0x0d0edbcf2c0da25ac9a79c9466989e46a8f96221_2 ( withdrawFunds ): [134, 161, 166, 162, 165, 162, 133, 163, 163, 168, 132, 132, 160, 132, 128, 132, 131, 163, 135, 132, 131, 169, 162, 132, 132, 170, 133, 132, 163, 133, 135, 135, 166, 159, 130, 168, 169, 163, 136, 132] sec
+Fully found EtherLeak from 0x0d0edbcf2c0da25ac9a79c9466989e46a8f96221_2 ( kill ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Never found EtherLeak from 0x11eba93a0a852fd34002f5411e1663cf864edb8b_1 ( withdraw )
+Fully found EtherLeak from 0x11eba93a0a852fd34002f5411e1663cf864edb8b_3 ( withdraw ): [388, 394, 393, 402, 401, 391, 386, 406, 400, 267, 396, 389, 394, 389, 389, 382, 395, 385, 386, 387, 385, 423, 396, 393, 382, 394, 392, 400, 397, 387, 347, 394, 410, 396, 267, 407, 414, 399, 386, 388] sec
+Fully found EtherLeak from 0x13a517751318cce71a524006b16f7930b3515ccf ( withdraw ): [1764, 1706, 1783, 1704, 1715, 1710, 1720, 1466, 1739, 1683, 1738, 1728, 1736, 1741, 1742, 1716, 1757, 1715, 1706, 1752, 1727, 1737, 1687, 1723, 1764, 1769, 1738, 1759, 1692, 1706, 1690, 1771, 1691, 1710, 1709, 1737, 1785, 1770, 1745, 1746] sec
+Fully found EtherLeak from 0x17e5f19d430788323863c6798ecd762a40de29f5 ( withdraw ): [24, 28, 20, 27, 28, 27, 28, 29, 29, 28, 27, 28, 28, 29, 32, 29, 27, 28, 28, 28, 28, 28, 29, 27, 28, 28, 29, 28, 27, 28, 28, 28, 28, 28, 28, 28, 28, 27, 28, 19] sec
+Never found EtherLeak from 0x2120887e9e4889653770b228ee8d13231d0ef045_1 ( Transfer_anything )
+Never found EtherLeak from 0x2120887e9e4889653770b228ee8d13231d0ef045_1 ( kill )
+Fully found EtherLeak from 0x2120887e9e4889653770b228ee8d13231d0ef045_2 ( Transfer_anything ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found EtherLeak from 0x2120887e9e4889653770b228ee8d13231d0ef045_3 ( Transfer_anything ): [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] sec
+Fully found EtherLeak from 0x2120887e9e4889653770b228ee8d13231d0ef045_3 ( kill ): [8, 9, 8, 9, 8, 8, 8, 8, 8, 8, 9, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 8, 8, 8, 8, 8, 8, 8, 9, 8, 8, 8, 8, 8, 8, 8, 8, 8] sec
+Never found EtherLeak from 0x287fda15f8f002e5df9f536f10bbfc0816960f36_1 ( @fallback )
+Never found EtherLeak from 0x287fda15f8f002e5df9f536f10bbfc0816960f36_1 ( selfdestructs )
+Never found EtherLeak from 0x287fda15f8f002e5df9f536f10bbfc0816960f36_3 ( @fallback )
+Fully found EtherLeak from 0x287fda15f8f002e5df9f536f10bbfc0816960f36_3 ( selfdestructs ): [4, 2, 3, 3, 2, 3, 4, 4, 3, 4, 3, 3, 3, 3, 4, 3, 3, 2, 4, 3, 3, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3, 2, 3, 3, 3, 3, 3] sec
+Never found EtherLeak from 0x34BC9A332350A41374aa650f1152C8D88e35a878_1 ( collectPlayerWinnings )
+Fully found EtherLeak from 0x39730ebfeb4e0c9c2e2645c528c00ee7b98ecfb2 ( withdraw ): [28, 29, 28, 30, 27, 28, 28, 27, 27, 27, 28, 28, 28, 28, 29, 27, 28, 28, 28, 19, 28, 28, 28, 29, 28, 28, 27, 28, 29, 28, 22, 30, 27, 29, 27, 28, 28, 28, 28, 27] sec
+Fully found EtherLeak from 0x3da034753b42bda1bcfa682f29685e2fd6729016 ( withdraw ): [1326, 1318, 1296, 1094, 1315, 1304, 1124, 1323, 1307, 1296, 1303, 1318, 1316, 1326, 1314, 1321, 1310, 1105, 1350, 1320, 1101, 1314, 1337, 1315, 1322, 1314, 1310, 1323, 1317, 1305, 1321, 1309, 1287, 1333, 1317, 1307, 1313, 1309, 1317, 1310] sec
+Never found EtherLeak from 0x3f30a9ac5f4d9cccfe0331948f5a8f5df1ba3856_1 ( sell )
+Never found EtherLeak from 0x3f30a9ac5f4d9cccfe0331948f5a8f5df1ba3856_3 ( sell )
+Never found EtherLeak from 0x42e98f6ed27fc8f76118efb7d4fe9a254bf3bcc9_1 ( withdrawEther )
+Never found EtherLeak from 0x42e98f6ed27fc8f76118efb7d4fe9a254bf3bcc9_1 ( close )
+Never found EtherLeak from 0x42e98f6ed27fc8f76118efb7d4fe9a254bf3bcc9_3 ( withdrawEther )
+Fully found EtherLeak from 0x42e98f6ed27fc8f76118efb7d4fe9a254bf3bcc9_3 ( close ): [515, 519, 515, 514, 514, 518, 518, 449, 539, 530, 517, 530, 533, 441, 546, 522, 542, 518, 521, 430, 513, 519, 543, 520, 493, 522, 545, 526, 500, 506, 509, 526, 527, 511, 514, 521, 534, 516, 510, 530] sec
+Fully found EtherLeak from 0x43efc486d1c7c5cb0193e409a73aa33786f5197c ( withdraw ): [59, 57, 61, 69, 59, 58, 59, 59, 60, 58, 59, 58, 57, 59, 59, 40, 59, 59, 57, 59, 57, 60, 59, 58, 58, 61, 59, 58, 59, 63, 59, 58, 59, 59, 61, 60, 57, 61, 58, 58] sec
+Fully found EtherLeak from 0x43f208d94a82cc2749a140b5e82636f31ce0390d ( winnerReward ): [25, 25, 26, 26, 17, 26, 26, 26, 25, 25, 25, 27, 25, 25, 25, 26, 25, 25, 17, 25, 25, 26, 26, 27, 24, 25, 25, 26, 25, 26, 26, 26, 26, 27, 25, 25, 25, 26, 25, 25] sec
+Fully found EtherLeak from 0x43f208d94a82cc2749a140b5e82636f31ce0390d ( loser ): [17, 18, 18, 17, 11, 17, 17, 17, 17, 17, 17, 18, 17, 17, 17, 17, 17, 16, 11, 17, 17, 18, 17, 18, 16, 17, 17, 17, 17, 17, 18, 18, 17, 18, 17, 17, 17, 17, 17, 17] sec
+Fully found EtherLeak from 0x43f208d94a82cc2749a140b5e82636f31ce0390d ( draw ): [16, 17, 17, 17, 11, 17, 17, 17, 16, 16, 16, 18, 16, 16, 16, 17, 16, 16, 11, 16, 16, 17, 16, 18, 16, 16, 16, 17, 17, 17, 17, 17, 17, 17, 16, 16, 16, 17, 16, 16] sec
+Fully found EtherLeak from 0x50430b6201c9859c91a5590ac71700cc71499a0e ( withdraw ): [33, 31, 31, 34, 33, 32, 32, 32, 33, 33, 32, 34, 34, 32, 32, 32, 32, 32, 33, 32, 34, 33, 33, 33, 32, 33, 33, 29, 33, 32, 32, 33, 33, 32, 34, 34, 33, 33, 32, 32] sec
+Never found EtherLeak from 0x528732d7ff76a31bd419f1d57d549d7643c02db2_1 ( payTokens )
+Never found EtherLeak from 0x528732d7ff76a31bd419f1d57d549d7643c02db2_3 ( payTokens )
+Fully found EtherLeak from 0x5aef06ec39e98c05201ee1e54b653c372ecb9cf3 ( withdraw ): [56, 56, 57, 57, 39, 58, 64, 65, 65, 59, 61, 60, 59, 59, 60, 59, 58, 40, 59, 59, 59, 57, 58, 58, 61, 57, 58, 59, 59, 59, 59, 59, 60, 59, 39, 57, 58, 59, 58, 57] sec
+Never found EtherLeak from 0x5f7bb27f7a4702ebce052745cddc1f567ec89e15_1 ( stop )
+Never found EtherLeak from 0x5f7bb27f7a4702ebce052745cddc1f567ec89e15_1 ( kill )
+Never found EtherLeak from 0x5f7bb27f7a4702ebce052745cddc1f567ec89e15_1 ( withdrawFunds )
+Partly found EtherLeak from 0x5f7bb27f7a4702ebce052745cddc1f567ec89e15_3 ( stop ): [5320, 6325, 5471, 5244] sec
+Never found EtherLeak from 0x5f7bb27f7a4702ebce052745cddc1f567ec89e15_3 ( kill )
+Partly found EtherLeak from 0x5f7bb27f7a4702ebce052745cddc1f567ec89e15_3 ( withdrawFunds ): [5148, 6149, 5297, 5071] sec
+Fully found EtherLeak from 0x612f1bdbe93523b7f5036efa87493b76341726e3 ( withdraw ): [1460, 1411, 1474, 1421, 1171, 1429, 1416, 1434, 1422, 1420, 1423, 1417, 1423, 1435, 1401, 1418, 1453, 1430, 1413, 1424, 1431, 1175, 1438, 1407, 1405, 1446, 1434, 1392, 1464, 1422, 1261, 1471, 1415, 1400, 1382, 1419, 1428, 1161, 1455, 1431] sec
+Fully found EtherLeak from 0x724e3a236d3e9c8ad2c3d1aff181118e6e9b3026 ( withdraw ): [1702, 1663, 1683, 1678, 1663, 1673, 1668, 1684, 1698, 1691, 1698, 1694, 1677, 1684, 1694, 1680, 1683, 1697, 1504, 1691, 1684, 1690, 1693, 1681, 1692, 1675, 1709, 1676, 1649, 1692, 1719, 1688, 1694, 1692, 1704, 1512, 1691, 1695, 1697, 1712] sec
+Fully found EtherLeak from 0x781fb4f25d07de3f3cfe2476645e52e0c661eefc ( withdraw ): [29, 28, 29, 29, 34, 28, 32, 28, 28, 27, 28, 28, 27, 28, 29, 28, 27, 28, 29, 28, 27, 28, 27, 29, 27, 28, 27, 28, 29, 29, 27, 28, 28, 28, 28, 28, 29, 28, 28, 28] sec
+Fully found EtherLeak from 0x7bd9084fdd5d021c226918d86c0721cb088b9b4a ( multiSendEth ): [9, 14, 8, 11, 7, 12, 12, 13, 14, 12, 12, 14, 12, 13, 14, 7, 12, 13, 13, 8, 12, 13, 13, 13, 15, 15, 13, 14, 13, 14, 11, 13, 15, 14, 14, 14, 14, 15, 12, 13] sec
+Never found EtherLeak from 0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1 ( destoryContract )
+Never found EtherLeak from 0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1 ( transferEtherToOwner )
+Fully found EtherLeak from 0x860a8c64cbc7f9aac11428ef8df989f5770cda60_2 ( destoryContract ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found EtherLeak from 0x860a8c64cbc7f9aac11428ef8df989f5770cda60_3 ( destoryContract ): [4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5] sec
+Fully found EtherLeak from 0x860a8c64cbc7f9aac11428ef8df989f5770cda60_3 ( transferEtherToOwner ): [5, 6, 7, 7, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 7, 7, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6] sec
+Fully found EtherLeak from 0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc ( withdraw ): [27, 30, 27, 20, 28, 29, 28, 27, 28, 29, 27, 28, 28, 28, 19, 28, 28, 28, 29, 27, 29, 28, 28, 28, 28, 29, 27, 29, 29, 28, 28, 28, 28, 28, 28, 28, 27, 29, 28, 29] sec
+Fully found EtherLeak from 0x8e9f6181371013194d48bc031adf7fe179fb37e3 ( withdraw ): [103, 99, 99, 98, 98, 101, 109, 102, 103, 98, 100, 105, 102, 98, 101, 105, 99, 106, 100, 102, 100, 98, 102, 102, 99, 101, 106, 95, 105, 104, 99, 102, 103, 102, 100, 106, 104, 101, 104, 105] sec
+Fully found EtherLeak from 0x95195adFb67f28AcFC07CE09eb496188527C0303_3 ( kill ): [76, 80, 84, 80, 85, 84, 77, 79, 79, 82, 78, 76, 82, 76, 80, 77, 77, 79, 80, 79, 80, 78, 80, 80, 79, 78, 77, 78, 82, 77, 78, 82, 78, 83, 81, 79, 82, 78, 77, 79] sec
+Fully found EtherLeak from 0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_1 ( withdrawFunds ): [6190, 6096, 5981, 6069, 6060, 6272, 6025, 5962, 5979, 6072, 5992, 5935, 6211, 5974, 5941, 6230, 5976, 5971, 5931, 5927, 4183, 6049, 6223, 6066, 6007, 5914, 6055, 5980, 6074, 6115, 6098, 5993, 6237, 5936, 5961, 6072, 5989, 6089, 6150, 5541] sec
+Fully found EtherLeak from 0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_1 ( withdraw ): [6190, 6096, 5981, 6069, 6060, 6272, 6025, 5962, 5979, 6072, 5992, 5935, 6211, 5974, 5941, 6230, 5976, 5971, 5931, 5927, 4183, 6049, 6223, 6066, 6007, 5914, 6055, 5980, 6074, 6115, 6098, 5993, 6237, 5936, 5961, 6072, 5989, 6089, 6150, 5541] sec
+Never found EtherLeak from 0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_1 ( finish )
+Never found EtherLeak from 0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3 ( withdrawFunds )
+Fully found EtherLeak from 0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3 ( withdraw ): [6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6] sec
+Fully found EtherLeak from 0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3 ( finish ): [5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5] sec
+Fully found EtherLeak from 0x9db3fd94a5bb1acdaef28ae483fe6b0d49746678 ( withdraw ): [28, 28, 28, 20, 20, 27, 27, 28, 28, 27, 27, 27, 19, 30, 29, 29, 28, 29, 28, 27, 28, 27, 27, 29, 29, 27, 29, 27, 25, 28, 28, 28, 28, 28, 28, 19, 28, 28, 28, 27] sec
+Never found EtherLeak from 0xa21c9a3ae47103b1fd1dfa04766c4d00c19e1ff6 ( payout )
+Never found EtherLeak from 0xa78a974b487357ad5c17a072dfee4d31b839b331_1 ( sendAll )
+Never found EtherLeak from 0xa78a974b487357ad5c17a072dfee4d31b839b331_1 ( smallCheckOut )
+Never found EtherLeak from 0xa78a974b487357ad5c17a072dfee4d31b839b331_1 ( bigCheckOut )
+Fully found EtherLeak from 0xa78a974b487357ad5c17a072dfee4d31b839b331_2 ( sendAll ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Never found EtherLeak from 0xa78a974b487357ad5c17a072dfee4d31b839b331_2 ( smallCheckOut )
+Never found EtherLeak from 0xa78a974b487357ad5c17a072dfee4d31b839b331_2 ( bigCheckOut )
+Fully found EtherLeak from 0xb5630e5dfd604b3b88965f2a5103bbf5e31a7340 ( withdraw ): [39, 39, 38, 43, 37, 40, 39, 27, 38, 38, 39, 39, 37, 39, 40, 37, 38, 37, 38, 26, 38, 37, 38, 40, 38, 38, 38, 39, 39, 38, 38, 38, 39, 37, 38, 38, 39, 38, 38, 38] sec
+Fully found EtherLeak from 0xb5c0e43a6330b9eb904ec57ea24d70269ae4652e ( destroycontract ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found EtherLeak from 0xb60e133dacf00b6f560909dc0a5311ae7f9a659b ( kill ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found EtherLeak from 0xd152f549545093347a162dce210e7293f1452150 ( disperseEther ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found EtherLeak from 0xd58132f2fbd65f02beee0626542e6ee059009ab4 ( withdraw ): [28, 26, 27, 27, 27, 28, 28, 28, 28, 27, 31, 27, 31, 27, 28, 29, 28, 28, 28, 28, 28, 27, 27, 27, 27, 28, 28, 29, 28, 28, 28, 28, 28, 28, 19, 27, 28, 20, 28, 28] sec
+Fully found EtherLeak from 0xd7290307c040f4089f8650b7f7aac3cfe39cd6bd ( withdraw ): [30, 32, 31, 31, 34, 31, 31, 32, 31, 31, 23, 32, 31, 32, 32, 31, 31, 31, 31, 31, 32, 33, 22, 31, 32, 31, 23, 31, 32, 31, 31, 31, 31, 32, 31, 31, 31, 33, 31, 31] sec
+Never found EtherLeak from 0xdcd03c274982b15341b570f39e0f72e730d11f32_1 ( @fallback )
+Never found EtherLeak from 0xdcd03c274982b15341b570f39e0f72e730d11f32_1 ( finalizeIco )
+Never found EtherLeak from 0xdcd03c274982b15341b570f39e0f72e730d11f32_3 ( @fallback )
+Never found EtherLeak from 0xdcd03c274982b15341b570f39e0f72e730d11f32_3 ( finalizeIco )
+Fully found EtherLeak from 0xdd97853ba34af302f3d6a6415a750ae38e26d1fc ( winnerReward ): [61, 56, 57, 58, 56, 56, 59, 56, 55, 55, 24, 56, 56, 57, 54, 55, 57, 55, 57, 57, 57, 24, 56, 57, 57, 56, 54, 55, 57, 56, 57, 28, 55, 56, 55, 24, 57, 23, 57, 57] sec
+Fully found EtherLeak from 0xdd97853ba34af302f3d6a6415a750ae38e26d1fc ( loser ): [20, 18, 18, 18, 18, 18, 19, 18, 18, 18, 12, 18, 18, 18, 17, 18, 18, 17, 18, 18, 18, 12, 18, 18, 18, 18, 17, 18, 19, 18, 18, 14, 17, 18, 17, 12, 18, 12, 18, 18] sec
+Fully found EtherLeak from 0xdd97853ba34af302f3d6a6415a750ae38e26d1fc ( draw ): [19, 17, 17, 17, 17, 17, 18, 17, 17, 17, 11, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 11, 17, 17, 17, 17, 17, 17, 18, 17, 17, 14, 17, 17, 17, 11, 18, 11, 17, 17] sec
+Fully found EtherLeak from 0xe30a76ec9168639f09061e602924ae601d341066 ( withdraw ): [26, 28, 26, 29, 28, 27, 20, 29, 28, 27, 28, 29, 26, 28, 28, 29, 29, 29, 29, 28, 28, 29, 29, 29, 28, 28, 28, 28, 27, 27, 27, 33, 28, 28, 28, 28, 27, 28, 28, 28] sec
+Fully found EtherLeak from 0xeefdfa0f6a921044e7901d18e6794c0a7baff4d7 ( withdraw ): [28, 28, 27, 30, 27, 26, 28, 27, 20, 28, 28, 28, 29, 28, 28, 28, 28, 28, 28, 27, 29, 28, 28, 28, 28, 22, 28, 27, 27, 20, 28, 28, 29, 19, 28, 28, 28, 28, 27, 29] sec
+Fully found EtherLeak from 0xf34839b310097fcb4cf3a302dda8cc9b57501083 ( withdraw ): [27, 27, 28, 20, 28, 28, 28, 27, 28, 19, 27, 28, 27, 28, 28, 27, 28, 28, 28, 20, 27, 28, 28, 29, 28, 28, 30, 28, 28, 28, 26, 28, 28, 28, 19, 29, 29, 28, 28, 28] sec
+Fully found EtherLeak from 0xf55a32f0107523c14027c4a1e6177cd7291395a0 ( withdraw ): [39, 37, 39, 37, 41, 38, 40, 38, 38, 39, 39, 38, 40, 38, 38, 37, 39, 39, 38, 38, 27, 38, 39, 38, 37, 39, 37, 39, 40, 38, 37, 38, 37, 37, 38, 38, 38, 38, 38, 39] sec
+Never found EtherLeak from 0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1 ( manualWithdrawEther )
+Never found EtherLeak from 0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_3 ( manualWithdrawEther )
+Never found EtherLeak from 0xfbfa60a21b423cb364de616a37464b61c1bc4c88_1 ( kill )
+Never found EtherLeak from 0xfbfa60a21b423cb364de616a37464b61c1bc4c88_1 ( withdrawFunds )
+Never found EtherLeak from 0xfbfa60a21b423cb364de616a37464b61c1bc4c88_2 ( kill )
+Fully found EtherLeak from 0xfbfa60a21b423cb364de616a37464b61c1bc4c88_2 ( withdrawFunds ): [135, 136, 136, 131, 148, 136, 145, 139, 136, 135, 128, 128, 133, 136, 136, 141, 146, 133, 134, 132, 129, 130, 132, 138, 137, 146, 136, 137, 138, 133, 140, 111, 139, 136, 99, 131, 145, 132, 96, 130] sec
+Never found EtherLeak from 0xfbfa60a21b423cb364de616a37464b61c1bc4c88_3 ( kill )
+Never found EtherLeak from 0xfbfa60a21b423cb364de616a37464b61c1bc4c88_3 ( withdrawFunds )
+Never found EtherLeak from 0xfc1078a7bb4521881663df4148434acd991af14c_1 ( destroy )
+Fully found EtherLeak from 0xfc1078a7bb4521881663df4148434acd991af14c_2 ( destroy ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found EtherLeak from 0xfc1078a7bb4521881663df4148434acd991af14c_3 ( destroy ): [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6] sec
+Fully found EtherLeak from 0xfc79774fb9dedeea2325d0d5570554eddc4e6747 ( withdraw ): [29, 30, 29, 30, 30, 29, 28, 20, 28, 29, 28, 30, 28, 29, 28, 28, 29, 29, 29, 28, 28, 29, 30, 28, 28, 28, 29, 29, 28, 28, 29, 28, 28, 29, 28, 29, 28, 29, 29, 29] sec
+Never found EtherLeak from incorrect_constructor_name1 ( withdraw )
+Never found EtherLeak from multiowned_vulnerable ( withdrawAll )
+Never found EtherLeak from parity_wallet_bug_2 ( kill )
+Never found EtherLeak from parity_wallet_bug_2 ( execute )
+Fully found EtherLeak from simple_suicide ( sudicideAnyone ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+Fully found EtherLeak from wallet_02_refund_nosub ( withdraw ): [45, 61, 52, 53, 61, 51, 53, 50, 53, 61, 54, 52, 54, 51, 56, 53, 56, 51, 52, 53, 55, 60, 52, 54, 57, 54, 53, 54, 57, 53, 55, 53, 56, 50, 52, 56, 51, 56, 53, 51] sec
+Fully found EtherLeak from wallet_02_refund_nosub ( refund ): [43, 59, 50, 51, 59, 49, 51, 48, 51, 59, 52, 50, 52, 49, 54, 51, 54, 49, 50, 51, 53, 58, 50, 52, 55, 52, 51, 52, 55, 51, 53, 51, 54, 48, 50, 54, 49, 54, 51, 49] sec
+Never found EtherLeak from wallet_03_wrong_constructor ( migrateTo )
+Fully found EtherLeak from wallet_04_confused_sign ( withdraw ): [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] sec
+===================================
+00m: 0.0
+01m: 42.5
+02m: 45.1
+03m: 47.0
+04m: 47.0
+05m: 47.0
+06m: 47.1
+07m: 48.0
+08m: 48.1
+09m: 48.9
+10m: 49.0
+11m: 49.0
+12m: 49.0
+13m: 49.0
+14m: 49.0
+15m: 49.0
+16m: 49.0
+17m: 49.0
+18m: 49.0
+19m: 49.1
+20m: 49.2
+21m: 49.2
+22m: 49.8
+23m: 50.1
+24m: 50.8
+25m: 51.0
+26m: 51.1
+27m: 51.1
+28m: 51.3
+29m: 52.6
+30m: 53.0
+31m: 53.0
+32m: 53.0
+33m: 53.0
+34m: 53.0
+35m: 53.0
+36m: 53.0
+37m: 53.0
+38m: 53.0
+39m: 53.0
+40m: 53.0
+41m: 53.0
+42m: 53.0
+43m: 53.0
+44m: 53.0
+45m: 53.0
+46m: 53.0
+47m: 53.0
+48m: 53.0
+49m: 53.0
+50m: 53.0
+51m: 53.0
+52m: 53.0
+53m: 53.0
+54m: 53.0
+55m: 53.0
+56m: 53.0
+57m: 53.0
+58m: 53.0
+59m: 53.0
+60m: 53.0
+61m: 53.0
+62m: 53.0
+63m: 53.0
+64m: 53.0
+65m: 53.0
+66m: 53.0
+67m: 53.0
+68m: 53.0
+69m: 53.0
+70m: 53.0
+71m: 53.0
+72m: 53.0
+73m: 53.0
+74m: 53.0
+75m: 53.0
+76m: 53.0
+77m: 53.0
+78m: 53.0
+79m: 53.0
+80m: 53.0
+81m: 53.0
+82m: 53.0
+83m: 53.0
+84m: 53.0
+85m: 53.1
+86m: 53.1
+87m: 53.1
+88m: 53.1
+89m: 53.2
+90m: 53.2
+91m: 53.2
+92m: 53.2
+93m: 53.2
+94m: 53.2
+95m: 53.2
+96m: 53.2
+97m: 53.2
+98m: 53.2
+99m: 53.5
+100m: 54.1
+101m: 54.3
+102m: 54.8
+103m: 54.9
+104m: 55.1
+105m: 55.2
+106m: 55.2
+107m: 55.2
+108m: 55.2
+109m: 55.2
+110m: 55.2
+111m: 55.2
+112m: 55.2
+113m: 55.2
+114m: 55.2
+115m: 55.2
+116m: 55.2
+117m: 55.2
+118m: 55.2
+119m: 55.2
+120m: 55.2
+===================================
